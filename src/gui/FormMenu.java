@@ -13,6 +13,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.border.LineBorder;
 
+import entity.NhanVien;
 import entity.TaiKhoan;
 
 public class FormMenu extends JFrame implements ActionListener{
@@ -49,7 +50,7 @@ public class FormMenu extends JFrame implements ActionListener{
 	
 
 	
-	private TaiKhoan taiKhoan;
+	protected TaiKhoan taiKhoan;
 	
 	
 	
@@ -201,6 +202,7 @@ public class FormMenu extends JFrame implements ActionListener{
 		this.taiKhoan = tk;
 		mnuTaiKhoan.setText("Nhân viên: " + taiKhoan.getNhanVien().getTenNV());
 	}
+	
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();

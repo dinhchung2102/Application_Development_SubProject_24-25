@@ -43,11 +43,10 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
 	
 	public DangNhap_GUI() {
 		setVisible(true);
-		setSize(1600, 900);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
-		setResizable(false);
 		
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
 		setTitle("CHƯƠNG TRÌNH QUẢN LÍ ĐẶT BÀN TRONG NHÀ HÀNG");
 		
 		
@@ -114,8 +113,10 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
 			TaiKhoan tk = taiKhoan_DAO.dangNhap(username, password);
 			if (tk!=null) {
 				this.dispose();
-				FormMenu formMenu = new FormMenu(tk);
-				formMenu.setVisible(true);
+				FormManHinhChinh newFrm = new FormManHinhChinh();
+				newFrm.setVisible(true);
+//				FormMenu formMenu = new FormMenu(tk);
+//				formMenu.setVisible(true);
 			}
 			else {
 				JOptionPane.showMessageDialog(null, "Sai tên tài khoản hoặc mật khẩu!!!");

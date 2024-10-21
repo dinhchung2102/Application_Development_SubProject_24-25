@@ -18,7 +18,7 @@ import javax.swing.border.EmptyBorder;
 
 import dao.DAO_Ban;
 import entity.Ban;
-import entity.TaiKhoan;
+
 
 
 public class FormManHinhChinh extends FormMenu implements ActionListener {
