@@ -145,14 +145,26 @@ public class FormManHinhChinh extends FormMenu implements ActionListener {
     }
 
     private JButton createTablePanel(String tableName, Integer soGheNgoi, Integer id) {
-        Color bgColor = new Color(128, 128, 128);
+        Color bgColor = new Color(255, 255, 255);
         JButton btnTable = new JButton();
         btnTable.setBackground(bgColor);
+        
+        DAO_Ban dao_Ban = new DAO_Ban();
+        Ban ban = dao_Ban.getBanById(id);
+        
+       
 
         JPanel tablePanel = new JPanel();
-        tablePanel.setBackground(Color.LIGHT_GRAY);
+        
         tablePanel.setPreferredSize(new Dimension(500, 500));
         tablePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 255, 0), 10));
+        
+        if(!ban.isTrangThai()) {
+        	tablePanel.setBackground(Color.LIGHT_GRAY);
+        }
+        else {
+			tablePanel.setBackground(Color.GREEN);
+		}
 
         JLabel lblID = new JLabel("Bàn: " + id);
         lblID.setFont(new Font("Montserrat", Font.BOLD, 50));

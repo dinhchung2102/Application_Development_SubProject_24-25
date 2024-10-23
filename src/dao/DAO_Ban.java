@@ -63,5 +63,47 @@ public class DAO_Ban {
 		}
 		return soGheNgoi;
 	}
+    public boolean capNhatTrangThaiBanById(int maBan, boolean trangThai) {
+        String sql = "UPDATE Ban SET trangThai = ? WHERE maBan = ?";
+        boolean isUpdated = false;
+
+        try (Connection connection = ConnectDB.getConnection();
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             
+            preparedStatement.setBoolean(1, trangThai);
+            preparedStatement.setInt(2, maBan);
+            
+            int rowsAffected = preparedStatement.executeUpdate();
+            isUpdated = (rowsAffected > 0);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return isUpdated; 
+    }
+    public Ban getBanById(int maBan) {
+        Ban ban = null; 
+        String sql = "SELECT * FROM Ban WHERE maBan = ?";
+
+        try (Connection connection = ConnectDB.getConnection(); 
+             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             
+            preparedStatement.setInt(1, maBan);
+            
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) { 
+                    String loaiBan = resultSet.getString("loaiBan");
+                    int soGheNgoi = resultSet.getInt("soGheNgoi"); 
+                    String moTa = resultSet.getString("moTa"); 
+                    boolean trangThai = resultSet.getBoolean("trangThai"); 
+
+                    ban = new Ban(maBan, loaiBan, soGheNgoi, moTa, trangThai); 
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return ban; // Trả về đối tượng Ban hoặc null nếu không tìm thấy
+    }
     
 }

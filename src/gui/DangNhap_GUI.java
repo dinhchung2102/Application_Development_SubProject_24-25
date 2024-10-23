@@ -23,6 +23,7 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import dao.DAO_Ban;
 import dao.NhanVien_DAO;
 import dao.TaiKhoan_DAO;
 import entity.NhanVien;
@@ -52,7 +53,8 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 		setVisible(true);
-		
+		DAO_Ban dao_BanTest = new DAO_Ban();
+		dao_BanTest.capNhatTrangThaiBanById(7, false);
 		pnlDangNhap = new JPanel(new GridBagLayout()){
             /**
 			 * 

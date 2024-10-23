@@ -35,7 +35,9 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.JTableHeader;
 import javax.swing.text.MaskFormatter;
 
 import com.toedter.calendar.JCalendar;
@@ -586,7 +588,7 @@ public class FormDatBan extends FormMenu {
 		pnlSearchMonAn.add(btnTimMon);
 		
 
-		String[] columnNames = { "STT", "Tên", "Đơn giá", "" };
+		String[] columnNames = { "STT", "Tên", "Đơn giá", "Hình ảnh" };
 		MonAnDAO monAnDAO = new MonAnDAO();
 		List<MonAn> listMonAns = monAnDAO.getAllMonAn();
 		Object[][] data = new Object[listMonAns.size()][columnNames.length];
@@ -596,8 +598,10 @@ public class FormDatBan extends FormMenu {
             data[i][0] = monAn.getMaMon(); // STT
             data[i][1] = monAn.getTenMon(); // Tên
             data[i][2] = monAn.getGiaTien(); // Đơn giá
-            data[i][3] = "Đặt"; // Nút đặt sẽ được thêm sau
+            data[i][3] = "X"; // Nút đặt sẽ được thêm sau
         }
+        
+        
         
 
 		// Tạo model cho bảng
@@ -607,6 +611,11 @@ public class FormDatBan extends FormMenu {
 		table.setBackground(Color.white);
 		table.setForeground(Color.red); // Màu chữ
 		table.setFont(txtFieldFont);
+		table.setRowHeight(30);
+		
+		JTableHeader header = table.getTableHeader();
+        header.setFont(new Font("Montserrat", Font.BOLD, 16)); // Font cho tiêu đề
+        header.setBackground(Color.LIGHT_GRAY); // Màu nền cho tiêu đề
 
 		table.getColumnModel().getColumn(0).setPreferredWidth(1);
 		table.getColumnModel().getColumn(1).setPreferredWidth(200);
@@ -621,6 +630,7 @@ public class FormDatBan extends FormMenu {
 		pnlGoiMon.add(Box.createVerticalStrut(10));
 		pnlGoiMon.add(scrollPane);
 		pnlGoiMon.add(Box.createVerticalStrut(20));
+		
 
 		/*
 		 * PANEL MÓN ĂN: LIST CÁC MÓN ĂN KHÁCH HÀNG ORDER KHI ĐẶT BÀN
@@ -631,8 +641,11 @@ public class FormDatBan extends FormMenu {
 		pnlListMon.setLayout(new BorderLayout());
 		// JButton btnThemMon = new JButton("THÊM");
 		pnlListMon.setPreferredSize(new Dimension(500, 800));
+		pnlListMon.setBackground(new Color(0, 200, 200));
 		// pnlListMon.add(btnThemMon);
-		pnlListMon.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+		pnlListMon.setBorder(BorderFactory.createLineBorder(Color.white));
+		
+		pnlListMon.setBorder(new TitledBorder("MÓN ĐÃ ĐẶT"));
 
 		// ===============Table để load dữ liệu món ăn đã đặt của khách hàng
 		// =======================
@@ -738,23 +751,68 @@ public class FormDatBan extends FormMenu {
 				// Nếu tất cả đều hợp lệ
 				if(radioBtnDungSau.isSelected()) {
 					if(radioBtnKHMoi.isSelected()) {
-						//Khách hàng  mới đặt bàn: thêm khách hàng + thêm phiếu
+						//Khách hàng  mới đặt bàn: 
+						
+						
+						//thêm khách hàng
 						DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
 						//"INSERT INTO KhachHang (tenKH, soDT, email, diaChi) VALUES (?, ?, ?, ?)";
 						KhachHang khachHangMoi = new KhachHang(0, txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(), txtDiaChi.getText());
 						dao_KhachHang.addKhachHang(khachHangMoi);
+						
+						//thêm phiếu, 
+						
+						
+						
+						//thêm chi tiết phiếu
+						
+						
+						
+						//Cập nhật trạng thái bàn
+						DAO_Ban dao_Ban = new DAO_Ban();
+						if(dao_Ban.capNhatTrangThaiBanById((int)comboBoxBan.getSelectedItem(), true)) {
+							JOptionPane.showMessageDialog(this,"Đã đặt bàn thành công");
+							this.dispose();
+							new FormManHinhChinh(nhanVien);
+						}
+						comboBoxBan.getSelectedItem();
 					}
 					else if (radioBtnKHVangLai.isSelected()) {
-						//Khách vãng lai đặt bàn, thêm phiếu, tính vào khách vãng lai
+						//Khách vãng lai đặt bàn, 
+						
+						
+						//thêm phiếu, 
+						
+						
+						//thêm chi tiết phiếu
+						
+						
+						//Cập nhật trạng thái
+						DAO_Ban dao_Ban = new DAO_Ban();
+						if(dao_Ban.capNhatTrangThaiBanById((int)comboBoxBan.getSelectedItem(), true)) {
+							JOptionPane.showMessageDialog(this,"Đã đặt bàn thành công");
+							this.dispose();
+							new FormManHinhChinh(nhanVien);
+						}
+						comboBoxBan.getSelectedItem();
 					}
 					else {
-						//Khách hàng cũ đặt bàn
+						//Khách hàng cũ đặt bàn//======================
+						//Cập nhật trạng thái bàn
+						DAO_Ban dao_Ban = new DAO_Ban();
+						if(dao_Ban.capNhatTrangThaiBanById((int)comboBoxBan.getSelectedItem(), true)) {
+							JOptionPane.showMessageDialog(this,"Đã đặt bàn thành công");
+							this.dispose();
+							new FormManHinhChinh(nhanVien);
+						}
+						comboBoxBan.getSelectedItem();
+						//thêm phiếu, thêm chi tiết phiếu, TT
 					}
 				}
 				else if (radioBtnSuDungNgay.isSelected()) {
 					
 				}
-				JOptionPane.showMessageDialog(this, "ok rồi đó");
+				
 			}
 
 		});
