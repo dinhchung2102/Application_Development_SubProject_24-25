@@ -1,6 +1,8 @@
 package gui;
 
 import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -9,6 +11,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -20,7 +23,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import dao.NhanVien_DAO;
 import dao.TaiKhoan_DAO;
+import entity.NhanVien;
 import entity.TaiKhoan;
 
 public class DangNhap_GUI extends JFrame implements ActionListener{
@@ -42,13 +47,11 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
 	private TaiKhoan_DAO taiKhoan_DAO = new TaiKhoan_DAO();
 	
 	public DangNhap_GUI() {
-		setVisible(true);
-		
+		setTitle("Quản lý đặt bàn");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
-		setTitle("CHƯƠNG TRÌNH QUẢN LÍ ĐẶT BÀN TRONG NHÀ HÀNG");
-		
+		setVisible(true);
 		
 		pnlDangNhap = new JPanel(new GridBagLayout()){
             /**
@@ -69,21 +72,30 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
         pnlForm.setLayout(new BoxLayout(pnlForm, BoxLayout.Y_AXIS));
         Border borderForm = BorderFactory.createLineBorder(Color.CYAN, 2);
         pnlForm.setBorder(borderForm);
+        
 
         pnlTaiKhoan = new JPanel();
         lblTaiKhoan = new JLabel("Tài khoản:");
-        txtTaiKhoan = new JTextField(20);
+        lblTaiKhoan.setFont(new Font("Montserrat", Font.BOLD, 25));
+        txtTaiKhoan = new JTextField(10);
+        txtTaiKhoan.setFont(new Font("Montserrat", Font.BOLD, 25));
+        
         pnlTaiKhoan.add(lblTaiKhoan);
         pnlTaiKhoan.add(txtTaiKhoan);
         
         pnlMatKhau = new JPanel();
         lblMatKhau = new JLabel("Mật khẩu:");
-        txtMatKhau = new JPasswordField(20);
+        lblMatKhau.setFont(new Font("Montserrat", Font.BOLD, 25));
+        txtMatKhau = new JPasswordField(10);
+        txtMatKhau.setFont(new Font("Montserrat", Font.BOLD, 25));
         pnlMatKhau.add(lblMatKhau);
+        pnlMatKhau.add(Box.createHorizontalStrut(4));
         pnlMatKhau.add(txtMatKhau);
         
         pnlButton = new JPanel();
         btnDangNhap = new JButton("Đăng Nhập");
+        btnDangNhap.setBackground(new Color(0,255,0));
+        btnDangNhap.setPreferredSize(new Dimension(150, 40));
         pnlButton.add(btnDangNhap);
         
         pnlForm.add(pnlTaiKhoan);
@@ -110,10 +122,16 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
 			String username = txtTaiKhoan.getText();
 			String password = txtMatKhau.getText();
 			
+			TaiKhoan_DAO taiKhoan_DAO = new TaiKhoan_DAO();
+			int maNV = taiKhoan_DAO.getMaNhanVienByTaiKhoan(username, password);
+			
+			NhanVien nhanVien = new NhanVien();
+			nhanVien = new NhanVien_DAO().getNhanVienTheoMa(maNV);
+			
 			TaiKhoan tk = taiKhoan_DAO.dangNhap(username, password);
 			if (tk!=null) {
 				this.dispose();
-				FormManHinhChinh newFrm = new FormManHinhChinh();
+				FormManHinhChinh newFrm = new FormManHinhChinh(nhanVien);
 				newFrm.setVisible(true);
 //				FormMenu formMenu = new FormMenu(tk);
 //				formMenu.setVisible(true);

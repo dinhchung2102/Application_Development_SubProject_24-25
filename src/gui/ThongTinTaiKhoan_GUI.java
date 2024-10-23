@@ -75,12 +75,11 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	private JLabel lblDiaChi;
 
 	public ThongTinTaiKhoan_GUI() {
-		setSize(1600, 900);
-		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		setLocationRelativeTo(null);
-		setResizable(false);
-		setTitle("CHƯƠNG TRÌNH QUẢN LÍ ĐẶT BÀN TRONG NHÀ HÀNG");
-
+		setTitle("Quản lý đặt bàn");
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+		setVisible(true);
 		// tạo font cho JMenu
 		fontMenu = new Font(Font.SERIF, Font.BOLD, 25);
 		// tạo font cho JMenuItem
@@ -176,7 +175,7 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 
 		// Tạo menu tài khoản
 		mnuTaiKhoan = new JMenu();
-		ImageIcon iconTaiKhoan = new ImageIcon("img//tai_khoan.png");
+		ImageIcon iconTaiKhoan = new ImageIcon("image//userIcon.png");
 		iconTaiKhoan.setImage(iconTaiKhoan.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH));
 		mnuTaiKhoan.setFont(new Font(Font.SERIF, Font.ITALIC, 25));
 		mnuTaiKhoan.setIcon(iconTaiKhoan);

@@ -11,6 +11,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 import javax.swing.border.LineBorder;
 
 import entity.NhanVien;
@@ -156,7 +157,7 @@ public class FormMenu extends JFrame implements ActionListener{
 		
 		//Tạo menu tài khoản
 		mnuTaiKhoan = new JMenu();
-		ImageIcon iconTaiKhoan = new ImageIcon("img//tai_khoan.png");
+		ImageIcon iconTaiKhoan = new ImageIcon("image//userIcon.png");
 		iconTaiKhoan.setImage(iconTaiKhoan.getImage().getScaledInstance(40, 40, Image.SCALE_SMOOTH));
 		mnuTaiKhoan.setFont(new Font(Font.SERIF, Font.ITALIC, 25));
 		mnuTaiKhoan.setIcon(iconTaiKhoan);
@@ -183,7 +184,7 @@ public class FormMenu extends JFrame implements ActionListener{
 		mniThongKeDoanhThu.addActionListener(this);
 		mniThongTinTaiKhoan.addActionListener(this);
 		mniDangXuat.addActionListener(this);
-		
+				
 		
 		mnuMenuBar.add(mnuDatBan);
 		mnuMenuBar.add(mnuPhieuDatBan);
@@ -207,10 +208,10 @@ public class FormMenu extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		Object o = e.getSource();
 		if (o.equals(mnuDatBan)) {
-			dispose();
-			FormManHinhChinh newFrmManHinhChinh = new FormManHinhChinh();
-			newFrmManHinhChinh.setVisible(true);
-			
+//			dispose();
+//			
+//			FormManHinhChinh newFrmManHinhChinh = new FormManHinhChinh();
+//			newFrmManHinhChinh.setVisible(true);
 			
 		}
 		else if (o.equals(mniDSPhieuDatBan)) {
@@ -244,20 +245,23 @@ public class FormMenu extends JFrame implements ActionListener{
 			
 		}
 		else if (o.equals(mniDSMonAn)) {
+			this.dispose();
+			MonAnGUI monAnGUI = new MonAnGUI();
+			
 			
 		}
 		else if (o.equals(mniThemMonAn)) {
 			
 		}
 		else if (o.equals(mniQuanLiKhachHang)) {
-			FormKhachHang newFrmKH = new FormKhachHang();
-			newFrmKH.setVisible(true);
+			this.dispose();
+	            KhachHangGUI khachHang = new KhachHangGUI();
+	            khachHang.setVisible(true);
 		}
 		else if (o.equals(mniThongKeDoanhThu)) {
 			
 		}
 		else if (o.equals(mniThongTinTaiKhoan)) {
-			this.dispose();
 			ThongTinTaiKhoan_GUI thongTinTaiKhoan_GUI = new ThongTinTaiKhoan_GUI(taiKhoan);
 			thongTinTaiKhoan_GUI.setVisible(true);
 		}

@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -14,10 +16,15 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
+import javax.swing.border.LineBorder;
 
 import dao.DAO_Ban;
 import entity.Ban;
+import entity.NhanVien;
+
 
 
 
@@ -26,19 +33,31 @@ public class FormManHinhChinh extends FormMenu implements ActionListener {
 
     private JPanel tablePanel = new JPanel();
     private JButton btnLau1, btnLau2, btnLau3;
+    private NhanVien nhanVien;
 
-    public FormManHinhChinh() {
+	private JPanel nvgRoom;
+
+	private JPanel pnlChucNang;
+
+	private JButton btnLocBanTrong;
+	
+    public FormManHinhChinh(NhanVien nhanVien) {
+    	this.nhanVien = nhanVien;
+    	Color backgroundColor = Color.white;
     	
         // ==================== PANEL TẠO SƠ ĐỒ BÀN ===================
         tablePanel.setLayout(new GridLayout(2, 4));
         tablePanel.setBorder(new EmptyBorder(20, 20, 10, 20));
 
         // ================= PANEL ĐIỀU HƯỚNG KHU VỰC ==================
-        JPanel nvgRoom = new JPanel();
+        nvgRoom = new JPanel();
         nvgRoom.setLayout(new BoxLayout(nvgRoom, BoxLayout.X_AXIS));
+        nvgRoom.setBackground(getForeground());
+        nvgRoom.setBackground(backgroundColor);
         btnLau1 = new JButton("LẦU 1");
         btnLau2 = new JButton("LẦU 2");
         btnLau3 = new JButton("LẦU 3");
+       
 
         nvgRoom.add(Box.createRigidArea(new Dimension(20, 0)));
         nvgRoom.add(btnLau1);
@@ -46,7 +65,10 @@ public class FormManHinhChinh extends FormMenu implements ActionListener {
         nvgRoom.add(btnLau2);
         nvgRoom.add(Box.createRigidArea(new Dimension(10, 0)));
         nvgRoom.add(btnLau3);
+        
+//        
         nvgRoom.add(Box.createVerticalStrut(100));
+        
 
         btnLau1.setForeground(Color.WHITE);
         btnLau2.setForeground(Color.WHITE);
@@ -60,18 +82,20 @@ public class FormManHinhChinh extends FormMenu implements ActionListener {
         
         
         //Panel ChucNang
-        JPanel pnlChucNang = new JPanel();
+        pnlChucNang = new JPanel();
         pnlChucNang.setLayout(new BoxLayout(pnlChucNang, BoxLayout.Y_AXIS));
+        pnlChucNang.setBackground(backgroundColor);
       
         pnlChucNang.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 10));
         
         
         
         
-        JButton btnLocBanTrong =  new JButton("LỌC BÀN TRỐNG");
+        btnLocBanTrong =  new JButton("LỌC BÀN TRỐNG");
         
        
         pnlChucNang.add(btnLocBanTrong);
+        pnlChucNang.setBackground(backgroundColor);
 
         // ===================== ADD CÁC PANEL VÀO JFRAME ========================
         getContentPane().add(tablePanel, BorderLayout.CENTER);
@@ -101,15 +125,18 @@ public class FormManHinhChinh extends FormMenu implements ActionListener {
 
         // =================== Vẽ lại PanelTable =====================================
         tablePanel.removeAll();
+        tablePanel.setBackground(Color.white);
 
         DAO_Ban daoBan = new DAO_Ban();
         List<Ban> bans = daoBan.getBansByKhuVuc(khuVuc);
         for (Ban ban : bans) {
             JButton table = createTablePanel(ban.getLoaiBan(), ban.getSoGheNgoi(), ban.getMaBan());
+            table.setBackground(Color.white);
+            table.setBorder(new LineBorder(Color.white, 4)); 
             tablePanel.add(table);
             table.addActionListener(e -> {
             	dispose();
-                FormDatBan newFrmDatBan = new FormDatBan(ban.getMaBan(), khuVuc);
+                FormDatBan newFrmDatBan = new FormDatBan(ban.getMaBan(), khuVuc, nhanVien);
                 newFrmDatBan.setVisible(true);
             });
         }

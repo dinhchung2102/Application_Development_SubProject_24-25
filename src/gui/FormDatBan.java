@@ -1,16 +1,23 @@
 package gui;
 
+import static org.junit.Assert.fail;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-
+import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.swing.BorderFactory;
 import javax.swing.Box;
@@ -18,6 +25,7 @@ import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -28,34 +36,116 @@ import javax.swing.JTextField;
 import javax.swing.Timer;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
+
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
 
 import dao.DAO_Ban;
 import dao.DAO_KhachHang;
 import dao.DAO_KhuVuc;
+import dao.MonAnDAO;
+import dao.NhanVien_DAO;
 import entity.Ban;
 import entity.KhachHang;
 import entity.KhuVuc;
+import entity.MonAn;
+import entity.NhanVien;
+import entity.TaiKhoan;
 
 public class FormDatBan extends FormMenu {
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private NhanVien nhanVien;
+	private Color backgroundColor = Color.cyan;
+	Color whiteColor = new Color(255, 255, 255);
+	Color whiteLight = new Color(250, 250, 250);
+	Font txtFieldFont = new Font("Montserrat", Font.BOLD, 16);
+	private JPanel pnlHeader;
+	private JLabel lblHeader;
+	private JPanel pnlInfor;
+	private JPanel pnlTTKhachHang;
+	private JPanel pnlSDT;
+	private JLabel lblSDT;
+	private JTextField txtSDT;
+	private JButton btnTimSDT;
+	private JPanel pnlLoaiKhachHang;
+	private JLabel lblLoaiKH;
+	private JRadioButton radioBtnKHMoi;
+	private JRadioButton radioBtnKHVangLai;
+	private ButtonGroup groupRadioBtnLoaiKH;
+	private JPanel pnlTenKH;
+	private JLabel lblTenKH;
+	private JTextField txtTenKH;
+	private JPanel pnlEmail;
+	private JLabel lblEmail;
+	private JTextField txtEmail;
+	private JPanel pnlDiaChi;
+	private JLabel lblDiaChi;
+	private JTextField txtDiaChi;
+	private JPanel pnlTTDatBan;
+	private JPanel pnlNhanVien;
+	private JTextField txtNhanVien;
+	private JPanel pnlSDDatBan;
+	private JRadioButton radioBtnSuDungNgay;
+	private JRadioButton radioBtnDungSau;
+	private ButtonGroup groupRadioBtnSuDung;
+	private JPanel pnlMaDatBan;
+	private JLabel lblMaDatBan;
+	private JTextField txtMaDatBan;
+	private JPanel pnlViTriBan;
+	private JLabel lblKhuVuc;
+	private JComboBox<String> comboBoxKhuVuc;
+	private JLabel lblBan;
+	private JComboBox<Integer> comboBoxBan;
+	private JLabel lblSoKhach;
+	private JComboBox comboBoxSLKhach;
+	private JPanel pnlGioDen;
+	private JLabel lblGioDen;
+	private JComboBox<Integer> comboBoxGio;
+	private JComboBox<Integer> comboBoxPhut;
+	private JLabel lblNgayDen;
+	private JDateChooser dateChooserNgayDen;
+	private JLabel hh;
+	private JLabel mm;
+	private JPanel pnlTienCoc;
+	private JLabel lblTienCoc;
+	private JTextField txtTienCoc;
+	private JPanel pnlGoiMon;
+	private DefaultTableModel model;
+	private JScrollPane scrollPane;
+	private JTable table;
+	private JPanel pnlListMon;
+	private DefaultTableModel modelTinhTien;
+	private JTable tableTinhTien;
+	private JScrollPane scrollPaneTinhTien;
+	private JPanel pnlThongTinPhieu;
+	private JPanel pnlYYY;
+	private JPanel pnlButton;
+	private JButton btnDatBan;
+	private JButton btnDatIn;
+	private JButton btnBack;
+	private JButton btnLamMoi;
+	private JPanel panelDatBan;
+	private JPanel pnlSearchMonAn;
+	private JTextField txtTimMon;
+	private JButton btnTimMon;
 
-	public FormDatBan(Integer maBan, String khuVuc) {
-
-		Color whiteColor = new Color(255, 255, 255);
-		Color whiteLight = new Color(250, 250, 250);
-		Font txtFieldFont = new Font("Montserrat", Font.BOLD, 16);
-
-		JPanel pnlHeader = new JPanel();
-		JLabel lblHeader = new JLabel("THÊM MỚI ĐẶT BÀN");
+	public FormDatBan(Integer maBan, String khuVuc, NhanVien nhanVien) {
+		this.nhanVien = nhanVien;
+		
+		pnlHeader = new JPanel();
+		pnlHeader.setBackground(backgroundColor);
+		lblHeader = new JLabel("THÊM MỚI ĐẶT BÀN");
 		lblHeader.setFont(new Font("Montserrat", Font.BOLD, 40));
 		pnlHeader.add(lblHeader);
 
 		// Panel chứa thông tin thêm đặt bàn mới//
-		JPanel pnlInfor = new JPanel();
+		pnlInfor = new JPanel();
 		pnlInfor.setLayout(new BoxLayout(pnlInfor, BoxLayout.X_AXIS));
+		pnlInfor.setBackground(backgroundColor);
 
 		/*
 		 * Panel thông tin Khách hàng + Nhân viên : Boxlayout Y : << Box X>><<Box>>
@@ -65,18 +155,20 @@ public class FormDatBan extends FormMenu {
 		 * Panel thông tin khách hàng
 		 */
 
-		JPanel pnlTTKhachHang = new JPanel();
+		pnlTTKhachHang = new JPanel();
 		pnlTTKhachHang.setLayout(new BoxLayout(pnlTTKhachHang, BoxLayout.Y_AXIS));
 		pnlTTKhachHang.setPreferredSize(new Dimension(150, 300));
+		pnlTTKhachHang.setBackground(backgroundColor);
 
 		// =====================TÌM SDT KHÁCH HÀNG==========================
-		JPanel pnlSDT = new JPanel();
+		pnlSDT = new JPanel();
+		pnlSDT.setBackground(backgroundColor);
 		pnlSDT.setLayout(new BoxLayout(pnlSDT, BoxLayout.X_AXIS));
-		JLabel lblSDT = new JLabel("ĐIỆN THOẠI: ");
+		lblSDT = new JLabel("ĐIỆN THOẠI: ");
 		lblSDT.setFont(txtFieldFont);
-		JTextField txtSDT = new JTextField();
+		txtSDT = new JTextField();
 		txtSDT.setFont(txtFieldFont);
-		JButton btnTimSDT = new JButton("TÌM");
+		btnTimSDT = new JButton("TÌM");
 		btnTimSDT.setPreferredSize(new Dimension(80, 10));
 		btnTimSDT.setBackground(whiteColor);
 		btnTimSDT.setFont(new Font("Montserrat", Font.BOLD, 20));
@@ -86,20 +178,23 @@ public class FormDatBan extends FormMenu {
 		pnlSDT.add(txtSDT);
 		pnlSDT.add(btnTimSDT);
 		// =======================LOẠI KHÁCH HÀNG================================
-		JPanel pnlLoaiKhachHang = new JPanel();
+		pnlLoaiKhachHang = new JPanel();
 		pnlLoaiKhachHang.setLayout(new BoxLayout(pnlLoaiKhachHang, BoxLayout.X_AXIS));
+		pnlLoaiKhachHang.setBackground(backgroundColor);
 
-		JLabel lblLoaiKH = new JLabel("KHÁCH HÀNG: ");
+		lblLoaiKH = new JLabel("KHÁCH HÀNG: ");
 		lblLoaiKH.setFont(txtFieldFont);
 
-		JRadioButton radioBtnKHMoi = new JRadioButton("MỚI");
+		radioBtnKHMoi = new JRadioButton("MỚI");
 		radioBtnKHMoi.setFont(txtFieldFont);
 		radioBtnKHMoi.setSelected(true);
+		radioBtnKHMoi.setBackground(backgroundColor);
 
-		JRadioButton radioBtnKHVangLai = new JRadioButton("VÃNG LAI");
+		radioBtnKHVangLai = new JRadioButton("VÃNG LAI");
 		radioBtnKHVangLai.setFont(txtFieldFont);
+		radioBtnKHVangLai.setBackground(backgroundColor);
 
-		ButtonGroup groupRadioBtnLoaiKH = new ButtonGroup();
+		groupRadioBtnLoaiKH = new ButtonGroup();
 		groupRadioBtnLoaiKH.add(radioBtnKHMoi);
 		groupRadioBtnLoaiKH.add(radioBtnKHVangLai);
 
@@ -109,6 +204,22 @@ public class FormDatBan extends FormMenu {
 		pnlLoaiKhachHang.add(Box.createHorizontalStrut(50));
 		pnlLoaiKhachHang.add(radioBtnKHVangLai);
 		pnlLoaiKhachHang.add(Box.createHorizontalStrut(135));
+		
+		
+		radioBtnKHVangLai.addActionListener(e->{
+			DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
+			KhachHang khachVangLai = new KhachHang();
+			khachVangLai = dao_KhachHang.getKhachHangBySDT("0000000000");
+			
+			txtSDT.setText(khachVangLai.getSoDT());
+			txtTenKH.setText(khachVangLai.getTenKH());
+			txtTenKH.setEditable(false);
+			txtDiaChi.setText("");
+			txtDiaChi.setEditable(false);
+			txtEmail.setText("");
+			txtEmail.setEditable(false);
+			
+		});
 
 		// =====================MÃ KHÁCH HÀNG================================
 //		JPanel pnlMaKH = new JPanel();
@@ -127,12 +238,13 @@ public class FormDatBan extends FormMenu {
 
 		// =====================HỌ TÊN KHÁCH HÀNG============================
 
-		JPanel pnlTenKH = new JPanel();
+		pnlTenKH = new JPanel();
 		pnlTenKH.setLayout(new BoxLayout(pnlTenKH, BoxLayout.X_AXIS));
+		pnlTenKH.setBackground(backgroundColor);
 
-		JLabel lblTenKH = new JLabel("HỌ TÊN: ");
+		lblTenKH = new JLabel("HỌ TÊN: ");
 		lblTenKH.setFont(txtFieldFont);
-		JTextField txtTenKH = new JTextField();
+		txtTenKH = new JTextField();
 		txtTenKH.setFont(txtFieldFont);
 		txtTenKH.setBackground(whiteColor);
 
@@ -141,12 +253,13 @@ public class FormDatBan extends FormMenu {
 		pnlTenKH.add(txtTenKH);
 		// =======================EMAIL========================================
 
-		JPanel pnlEmail = new JPanel();
+		pnlEmail = new JPanel();
 		pnlEmail.setLayout(new BoxLayout(pnlEmail, BoxLayout.X_AXIS));
+		pnlEmail.setBackground(backgroundColor);
 
-		JLabel lblEmail = new JLabel("EMAIL: ");
+		lblEmail = new JLabel("EMAIL: ");
 		lblEmail.setFont(txtFieldFont);
-		JTextField txtEmail = new JTextField();
+		txtEmail = new JTextField();
 		txtEmail.setFont(txtFieldFont);
 		pnlEmail.add(lblEmail);
 		pnlEmail.add(Box.createHorizontalStrut(84));
@@ -154,11 +267,13 @@ public class FormDatBan extends FormMenu {
 
 		// =======================ĐỊA CHỈ KHÁCH HÀNG==========================
 
-		JPanel pnlDiaChi = new JPanel();
+		pnlDiaChi = new JPanel();
 		pnlDiaChi.setLayout(new BoxLayout(pnlDiaChi, BoxLayout.X_AXIS));
-		JLabel lblDiaChi = new JLabel("ĐỊA CHỈ: ");
+		pnlDiaChi.setBackground(backgroundColor);
+
+		lblDiaChi = new JLabel("ĐỊA CHỈ: ");
 		lblDiaChi.setFont(txtFieldFont);
-		JTextField txtDiaChi = new JTextField();
+		txtDiaChi = new JTextField();
 		txtDiaChi.setFont(txtFieldFont);
 		pnlDiaChi.add(lblDiaChi);
 		pnlDiaChi.add(Box.createHorizontalStrut(76));
@@ -170,7 +285,9 @@ public class FormDatBan extends FormMenu {
 			KhachHang khachHang = dao_KhachHang.getKhachHangBySDT(txtSDT.getText());
 
 			if (khachHang == null) {
-				JOptionPane.showMessageDialog(null, "Số điện thoại không tồn tại!!!");
+				JOptionPane.showMessageDialog(null, "SỐ ĐIỆN THOẠI KHÔNG TỒN TẠI", "Nhà hàng hiện lên và nói",
+						JOptionPane.WARNING_MESSAGE);
+
 			} else {
 				groupRadioBtnLoaiKH.clearSelection();
 				// txtMaKH.setText(String.valueOf(khachHang.getMaKH()));
@@ -223,15 +340,31 @@ public class FormDatBan extends FormMenu {
 		 * ==
 		 * 
 		 */
-		JPanel pnlTTDatBan = new JPanel();
+		pnlTTDatBan = new JPanel();
 		pnlTTDatBan.setLayout(new BoxLayout(pnlTTDatBan, BoxLayout.Y_AXIS));
 		pnlTTDatBan.setPreferredSize(new Dimension(150, 300));
+		pnlTTDatBan.setBackground(backgroundColor);
 		// ======================THÔNG TIN NHÂN VIÊN===========================
-		JPanel pnlNhanVien = new JPanel();
+		pnlNhanVien = new JPanel();
 		pnlNhanVien.setLayout(new BoxLayout(pnlNhanVien, BoxLayout.X_AXIS));
+		pnlNhanVien.setBackground(backgroundColor);
 		JLabel lblNhanVien = new JLabel("NHÂN VIÊN: ");
 		lblNhanVien.setFont(txtFieldFont);
-		JTextField txtNhanVien = new JTextField();
+
+//		JComboBox<String> comboBoxNhanVien = new JComboBox<String>();
+//		comboBoxNhanVien.setFont(txtFieldFont);
+//		comboBoxNhanVien.setBackground(whiteColor);
+//		
+//		ArrayList<NhanVien> nVienList = new ArrayList<NhanVien>();
+//		nVienList = new NhanVien_DAO().getAllNhanVien();
+//		
+//		for(NhanVien nVien: nVienList) {
+//			comboBoxNhanVien.addItem(nVien.getTenNV());
+//		}
+//		
+
+		txtNhanVien = new JTextField();
+		txtNhanVien.setText(nhanVien.getTenNV());
 		txtNhanVien.setFont(txtFieldFont);
 		txtNhanVien.setBackground(whiteLight);
 		txtNhanVien.setEditable(false);
@@ -239,17 +372,21 @@ public class FormDatBan extends FormMenu {
 		pnlNhanVien.add(lblNhanVien);
 		pnlNhanVien.add(Box.createHorizontalStrut(14));
 		pnlNhanVien.add(txtNhanVien);
+		// pnlNhanVien.add(txtNhanVien);
 		// ===========================SỬ DỤNG ĐẶT BÀN===============================
-		JPanel pnlSDDatBan = new JPanel();
+		pnlSDDatBan = new JPanel();
 		pnlSDDatBan.setLayout(new BoxLayout(pnlSDDatBan, BoxLayout.X_AXIS));
-		JRadioButton radioBtnSuDungNgay = new JRadioButton("SỬ DỤNG NGAY");
+		pnlSDDatBan.setBackground(backgroundColor);
+		radioBtnSuDungNgay = new JRadioButton("SỬ DỤNG NGAY");
 		radioBtnSuDungNgay.setFont(txtFieldFont);
 		radioBtnSuDungNgay.setSelected(true);
+		radioBtnSuDungNgay.setBackground(backgroundColor);
 
-		JRadioButton radioBtnDungSau = new JRadioButton("DÙNG SAU");
+		radioBtnDungSau = new JRadioButton("DÙNG SAU");
 		radioBtnDungSau.setFont(txtFieldFont);
+		radioBtnDungSau.setBackground(backgroundColor);
 
-		ButtonGroup groupRadioBtnSuDung = new ButtonGroup();
+		groupRadioBtnSuDung = new ButtonGroup();
 		groupRadioBtnSuDung.add(radioBtnSuDungNgay);
 		groupRadioBtnSuDung.add(radioBtnDungSau);
 
@@ -259,28 +396,30 @@ public class FormDatBan extends FormMenu {
 		pnlSDDatBan.add(radioBtnDungSau);
 
 		// ========================MÃ ĐẶT BÀN======================================
-		JPanel pnlMaDatBan = new JPanel();
+		pnlMaDatBan = new JPanel();
 		pnlMaDatBan.setLayout(new BoxLayout(pnlMaDatBan, BoxLayout.X_AXIS));
-		JLabel lblMaDatBan = new JLabel("MÃ ĐẶT BÀN: ");
+		pnlMaDatBan.setBackground(backgroundColor);
+		lblMaDatBan = new JLabel("MÃ ĐẶT BÀN: ");
 		lblMaDatBan.setFont(txtFieldFont);
-		JTextField txtMaDatBan = new JTextField();
+		txtMaDatBan = new JTextField();
 		txtMaDatBan.setFont(txtFieldFont);
 		txtMaDatBan.setEditable(false);
 		txtMaDatBan.setBackground(whiteColor);
 		pnlMaDatBan.add(lblMaDatBan);
 		pnlMaDatBan.add(txtMaDatBan);
 		// ==============================VỊ TRÍ BÀN ĐẶT ============================
-		JPanel pnlViTriBan = new JPanel();
+		pnlViTriBan = new JPanel();
 		pnlViTriBan.setLayout(new BoxLayout(pnlViTriBan, BoxLayout.X_AXIS));
-		JLabel lblKhuVuc = new JLabel("KHU VỰC: ");
+		pnlViTriBan.setBackground(backgroundColor);
+		lblKhuVuc = new JLabel("KHU VỰC: ");
 		lblKhuVuc.setFont(txtFieldFont);
-		JComboBox<String> comboBoxKhuVuc = new JComboBox<String>();
+		comboBoxKhuVuc = new JComboBox<String>();
 		comboBoxKhuVuc.setBackground(whiteColor);
 		comboBoxKhuVuc.setFont(txtFieldFont);
 
-		JLabel lblBan = new JLabel("BÀN: ");
+		lblBan = new JLabel("BÀN: ");
 		lblBan.setFont(txtFieldFont);
-		JComboBox<Integer> comboBoxBan = new JComboBox<Integer>();
+		comboBoxBan = new JComboBox<Integer>();
 		comboBoxBan.setBackground(whiteColor);
 		comboBoxBan.setFont(txtFieldFont);
 
@@ -294,45 +433,107 @@ public class FormDatBan extends FormMenu {
 		pnlViTriBan.add(lblBan);
 		pnlViTriBan.add(comboBoxBan);
 
-		JLabel lblSoKhach = new JLabel("SỐ LƯỢNG: ");
+		lblSoKhach = new JLabel("SỐ LƯỢNG: ");
 		lblSoKhach.setFont(txtFieldFont);
-		JComboBox<Integer> comboBoxSLKhach = new JComboBox<>();
+		comboBoxSLKhach = new JComboBox<>();
 		comboBoxSLKhach.setPreferredSize(new Dimension(60, 30));
+		comboBoxSLKhach.setBackground(backgroundColor);
 		comboBoxSLKhach.setBackground(whiteColor);
 		comboBoxSLKhach.setFont(txtFieldFont);
 		handleCBBSoLuong(comboBoxBan, comboBoxSLKhach);
 
 		pnlViTriBan.add(lblSoKhach);
 		pnlViTriBan.add(comboBoxSLKhach);
+		pnlViTriBan.setBackground(backgroundColor);
 
 		// =======================GIỜ ĐẾN ===============================
 
-		JPanel pnlGioDen = new JPanel();
+		pnlGioDen = new JPanel();
 		pnlGioDen.setLayout(new BoxLayout(pnlGioDen, BoxLayout.X_AXIS));
-		JLabel lblGioDen = new JLabel("GIỜ ĐẾN: ");
+		pnlGioDen.setBackground(backgroundColor);
+
+		lblGioDen = new JLabel("GIỜ ĐẾN: ");
 		lblGioDen.setFont(txtFieldFont);
-		JTextField txtGioDen = new JTextField();
-		txtGioDen.setFont(txtFieldFont);
+
+		comboBoxGio = new JComboBox<Integer>();
+		comboBoxGio.setFont(txtFieldFont);
+		comboBoxGio.setBackground(backgroundColor);
+		for (int i = 7; i <= 21; i++) {
+			comboBoxGio.addItem(i);
+		}
+
+		comboBoxPhut = new JComboBox<Integer>();
+		comboBoxPhut.setFont(txtFieldFont);
+		comboBoxPhut.setBackground(backgroundColor);
+		for (int i = 0; i <= 59; i++) {
+			comboBoxPhut.addItem(i);
+		}
+		comboBoxGio.setEnabled(false);
+		comboBoxPhut.setEnabled(false);
+
+		comboBoxGio.setBackground(whiteLight);
+		comboBoxPhut.setBackground(whiteLight);
+
+		lblNgayDen = new JLabel("NGÀY: ");
+		lblNgayDen.setFont(txtFieldFont);
+
+		dateChooserNgayDen = new JDateChooser();
+		dateChooserNgayDen.setFont(txtFieldFont);
+		dateChooserNgayDen.setBackground(whiteLight);
+		dateChooserNgayDen.setEnabled(false);
+
+		radioBtnSuDungNgay.addActionListener(e -> {
+			comboBoxGio.setBackground(whiteLight);
+			comboBoxPhut.setBackground(whiteLight);
+			comboBoxGio.setEnabled(false);
+			comboBoxPhut.setEnabled(false);
+			dateChooserNgayDen.setEnabled(false);
+
+		});
+
+		radioBtnDungSau.addActionListener(e -> {
+
+			comboBoxGio.setBackground(whiteColor);
+			comboBoxPhut.setBackground(whiteColor);
+			comboBoxGio.setEnabled(true);
+			comboBoxPhut.setEnabled(true);
+			dateChooserNgayDen.setBackground(whiteColor);
+			dateChooserNgayDen.setEnabled(true);
+		});
+		hh = new JLabel("giờ");
+		hh.setFont(txtFieldFont);
+		mm = new JLabel("phút");
+		mm.setFont(txtFieldFont);
+
 		pnlGioDen.add(lblGioDen);
 		pnlGioDen.add(Box.createHorizontalStrut(30));
-		pnlGioDen.add(txtGioDen);
+		pnlGioDen.add(comboBoxGio);
+		pnlGioDen.add(hh);
+		pnlGioDen.add(Box.createHorizontalStrut(10));
+		pnlGioDen.add(comboBoxPhut);
+		pnlGioDen.add(mm);
+		pnlGioDen.add(Box.createHorizontalStrut(30));
+		pnlGioDen.add(lblNgayDen);
 
-		Timer timer = new Timer(1000, e -> {
-			LocalDateTime currentDateTime = LocalDateTime.now(); // Lấy ngày và giờ hiện tại
-			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Định dạng ngày giờ
-			String formattedDateTime = currentDateTime.format(formatter); // Định dạng thành chuỗi
-			txtGioDen.setText(formattedDateTime); // Cập nhật JTextField
-		});
-		timer.start(); // Bắt đầu Timer
+		pnlGioDen.add(dateChooserNgayDen);
+
+//		Timer timer = new Timer(1000, e -> {
+//			LocalDateTime currentDateTime = LocalDateTime.now(); // Lấy ngày và giờ hiện tại
+//			DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Định dạng ngày giờ
+//			String formattedDateTime = currentDateTime.format(formatter); // Định dạng thành chuỗi
+//			txtGioDen.setText(formattedDateTime); // Cập nhật JTextField
+//		});
+//		timer.start(); // Bắt đầu Timer
 
 		// ======================SỐ LƯỢNG KHÁCH===================
 		// =================================TIỀN CỌC
 		// ====================================
-		JPanel pnlTienCoc = new JPanel();
+		pnlTienCoc = new JPanel();
 		pnlTienCoc.setLayout(new BoxLayout(pnlTienCoc, BoxLayout.X_AXIS));
-		JLabel lblTienCoc = new JLabel("TIỀN CỌC: ");
+		pnlTienCoc.setBackground(backgroundColor);
+		lblTienCoc = new JLabel("TIỀN CỌC: ");
 		lblTienCoc.setFont(txtFieldFont);
-		JTextField txtTienCoc = new JTextField();
+		txtTienCoc = new JTextField();
 		txtTienCoc.setFont(txtFieldFont);
 		getTienCoc(maBan, (int) comboBoxSLKhach.getSelectedItem(), txtTienCoc);
 		// ==============================ACTION LISTENER/[[[[]]]]PANEL TT DAT
@@ -369,24 +570,54 @@ public class FormDatBan extends FormMenu {
 		/*
 		 * Panel Gọi món
 		 */
-		JPanel pnlGoiMon = new JPanel();
+		pnlGoiMon = new JPanel();
 		pnlGoiMon.setLayout(new BoxLayout(pnlGoiMon, BoxLayout.Y_AXIS));
-		pnlGoiMon.setPreferredSize(new Dimension(500, 500));
+		pnlGoiMon.setBackground(backgroundColor);
+		pnlGoiMon.setPreferredSize(new Dimension(30, 500));
+		
+		pnlSearchMonAn = new JPanel();
+		pnlSearchMonAn.setLayout(new BoxLayout(pnlSearchMonAn, BoxLayout.X_AXIS));
+		pnlSearchMonAn.setPreferredSize(new Dimension(100, 10));
+		
+		txtTimMon = new JTextField();
+		txtTimMon.setFont(txtFieldFont);
+		btnTimMon = new JButton("TÌM MÓN");
+		pnlSearchMonAn.add(txtTimMon);
+		pnlSearchMonAn.add(btnTimMon);
+		
 
-		String[] columnNames = { "STT", "Tên", "Đơn giá", "Số lượng", "Thành tiền" };
-		Object[][] data = {
+		String[] columnNames = { "STT", "Tên", "Đơn giá", "" };
+		MonAnDAO monAnDAO = new MonAnDAO();
+		List<MonAn> listMonAns = monAnDAO.getAllMonAn();
+		Object[][] data = new Object[listMonAns.size()][columnNames.length];
 
-		};
+        for (int i = 0; i < listMonAns.size(); i++) {
+            MonAn monAn = listMonAns.get(i);
+            data[i][0] = monAn.getMaMon(); // STT
+            data[i][1] = monAn.getTenMon(); // Tên
+            data[i][2] = monAn.getGiaTien(); // Đơn giá
+            data[i][3] = "Đặt"; // Nút đặt sẽ được thêm sau
+        }
+        
 
 		// Tạo model cho bảng
-		DefaultTableModel model = new DefaultTableModel(data, columnNames);
-		JTable table = new JTable(model);
+		model = new DefaultTableModel(data, columnNames);
+		table = new JTable(model);
+		// Đặt màu nền cho toàn bộ bảng
+		table.setBackground(Color.white);
+		table.setForeground(Color.red); // Màu chữ
+		table.setFont(txtFieldFont);
 
-		table.getColumnModel().getColumn(0).setPreferredWidth(20);
-		table.getColumnModel().getColumn(3).setPreferredWidth(20);
+		table.getColumnModel().getColumn(0).setPreferredWidth(1);
+		table.getColumnModel().getColumn(1).setPreferredWidth(200);
 
 		// Thêm bảng vào cuộn
-		JScrollPane scrollPane = new JScrollPane(table);
+		scrollPane = new JScrollPane(table);
+		scrollPane.setBackground(Color.white);
+		scrollPane.setPreferredSize(new Dimension(500, 550));
+		
+		pnlGoiMon.add(Box.createVerticalStrut(10));
+		pnlGoiMon.add(pnlSearchMonAn);
 		pnlGoiMon.add(Box.createVerticalStrut(10));
 		pnlGoiMon.add(scrollPane);
 		pnlGoiMon.add(Box.createVerticalStrut(20));
@@ -396,7 +627,7 @@ public class FormDatBan extends FormMenu {
 		 * //=======================
 		 * 
 		 **/
-		JPanel pnlListMon = new JPanel();
+		pnlListMon = new JPanel();
 		pnlListMon.setLayout(new BorderLayout());
 		// JButton btnThemMon = new JButton("THÊM");
 		pnlListMon.setPreferredSize(new Dimension(500, 800));
@@ -407,29 +638,33 @@ public class FormDatBan extends FormMenu {
 		// =======================
 		String[] columnNamesTinhTien = { "STT", "Tên", "Đơn giá", "Số lượng", "Thành tiền" };
 		Object[][] dataTinhTien = {
-
+				
 		};
 
 		// Tạo model cho bảng
-		DefaultTableModel modelTinhTien = new DefaultTableModel(dataTinhTien, columnNamesTinhTien);
-		JTable tableTinhTien = new JTable(modelTinhTien);
+		modelTinhTien = new DefaultTableModel(dataTinhTien, columnNamesTinhTien);
+		tableTinhTien = new JTable(modelTinhTien);
 
 		tableTinhTien.getColumnModel().getColumn(0).setPreferredWidth(20);
 		tableTinhTien.getColumnModel().getColumn(3).setPreferredWidth(20);
 
 		// Thêm bảng vào cuộn
-		JScrollPane scrollPaneTinhTien = new JScrollPane(tableTinhTien);
+		scrollPaneTinhTien = new JScrollPane(tableTinhTien);
 		pnlListMon.add(scrollPaneTinhTien, BorderLayout.CENTER);
 
 		// ============================ADD 2 PANEL TT KHÁCH HÀNG + TT ĐẶT BÀN VÀO PANEL
 		// CENTER=======================
-		JPanel pnlThongTinPhieu = new JPanel();
+		pnlThongTinPhieu = new JPanel();
 		pnlThongTinPhieu.setLayout(new BoxLayout(pnlThongTinPhieu, BoxLayout.X_AXIS));
+		pnlThongTinPhieu.setBackground(backgroundColor);
 		pnlThongTinPhieu.add(pnlTTKhachHang);
 		pnlThongTinPhieu.add(Box.createHorizontalStrut(20));
 		pnlThongTinPhieu.add(pnlTTDatBan);
-		JPanel pnlYYY = new JPanel();
+		
+		
+		pnlYYY = new JPanel();
 		pnlYYY.setLayout(new BoxLayout(pnlYYY, BoxLayout.Y_AXIS));
+		pnlYYY.setBackground(backgroundColor);
 
 		pnlYYY.add(pnlThongTinPhieu);
 		pnlYYY.add(Box.createVerticalStrut(20));
@@ -443,21 +678,22 @@ public class FormDatBan extends FormMenu {
 		pnlInfor.add(Box.createHorizontalStrut(10));
 
 		// ===============================================
-		JPanel pnlButton = new JPanel();
+		pnlButton = new JPanel();
 		pnlButton.setLayout(new BoxLayout(pnlButton, BoxLayout.X_AXIS));
-		JButton btnDatBan = new JButton("ĐẶT BÀN");
+		pnlButton.setBackground(backgroundColor);
+		btnDatBan = new JButton("ĐẶT BÀN");
 		btnDatBan.setBackground(new Color(0, 255, 0));
 		btnDatBan.setMaximumSize(new Dimension(200, 100));
 
-		JButton btnDatIn = new JButton("ĐẶT & IN PHIẾU");
+		btnDatIn = new JButton("ĐẶT & IN PHIẾU");
 		btnDatIn.setBackground(new Color(0, 255, 0));
 		btnDatIn.setMaximumSize(new Dimension(200, 100));
 
-		JButton btnBack = new JButton("TRỞ LẠI");
+		btnBack = new JButton("TRỞ LẠI");
 		btnBack.setMaximumSize(new Dimension(200, 100));
 		btnBack.setBackground(new Color(255, 0, 0));
 
-		JButton btnLamMoi = new JButton("LÀM MỚI");
+		btnLamMoi = new JButton("LÀM MỚI");
 		btnLamMoi.setMaximumSize(new Dimension(200, 100));
 		btnLamMoi.setBackground(new Color(0, 255, 0));
 		btnLamMoi.addActionListener(e -> {
@@ -480,8 +716,47 @@ public class FormDatBan extends FormMenu {
 
 		btnBack.setForeground(new Color(255, 255, 255));
 		btnBack.addActionListener(e -> {
-			new FormManHinhChinh();
+			new FormManHinhChinh(nhanVien);
 			dispose();
+		});
+
+		btnDatBan.addActionListener(e -> {
+
+			// Kiểm tra số điện thoại và tên không được để trống
+			if (!isValidString(txtSDT.getText()) || !isValidString(txtTenKH.getText())) {
+				JOptionPane.showMessageDialog(this, "Số điện thoại và tên không được để trống");
+			} else if (!isValidPhoneNumber(txtSDT.getText())) {
+				// Kiểm tra định dạng số điện thoại
+				JOptionPane.showMessageDialog(this, "Số điện thoại sai định dạng");
+			} else if (!isValidFullName(txtTenKH.getText())) {
+				// Kiểm tra định dạng tên
+				JOptionPane.showMessageDialog(this, "Tên sai định dạng");
+			} else if (!txtEmail.getText().isEmpty() && !isValidEmail(txtEmail.getText())) {
+				// Nếu email không rỗng thì kiểm tra định dạng
+				JOptionPane.showMessageDialog(this, "Email sai định dạng");
+			} else {
+				// Nếu tất cả đều hợp lệ
+				if(radioBtnDungSau.isSelected()) {
+					if(radioBtnKHMoi.isSelected()) {
+						//Khách hàng  mới đặt bàn: thêm khách hàng + thêm phiếu
+						DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
+						//"INSERT INTO KhachHang (tenKH, soDT, email, diaChi) VALUES (?, ?, ?, ?)";
+						KhachHang khachHangMoi = new KhachHang(0, txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(), txtDiaChi.getText());
+						dao_KhachHang.addKhachHang(khachHangMoi);
+					}
+					else if (radioBtnKHVangLai.isSelected()) {
+						//Khách vãng lai đặt bàn, thêm phiếu, tính vào khách vãng lai
+					}
+					else {
+						//Khách hàng cũ đặt bàn
+					}
+				}
+				else if (radioBtnSuDungNgay.isSelected()) {
+					
+				}
+				JOptionPane.showMessageDialog(this, "ok rồi đó");
+			}
+
 		});
 		pnlButton.add(Box.createHorizontalStrut(10));
 		pnlButton.add(btnBack);
@@ -495,14 +770,17 @@ public class FormDatBan extends FormMenu {
 		pnlButton.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
 
 		// Add vào ContentPane
-		JPanel panelDatBan = new JPanel();
+		panelDatBan = new JPanel();
 		panelDatBan.setLayout(new BorderLayout());
+		panelDatBan.setBackground(whiteLight);
+		panelDatBan.setBackground(backgroundColor);
 		panelDatBan.setBorder(new EmptyBorder(10, 10, 10, 10));
 		panelDatBan.add(pnlHeader, BorderLayout.NORTH);
 		panelDatBan.add(pnlInfor, BorderLayout.CENTER);
 		panelDatBan.add(pnlButton, BorderLayout.SOUTH);
 
 		getContentPane().add(panelDatBan);
+		getContentPane().setBackground(backgroundColor);
 
 	}
 
@@ -564,6 +842,27 @@ public class FormDatBan extends FormMenu {
 		}
 		txtTienCoc.setText(String.valueOf(tienCoc));
 
+	}
+
+	public boolean isValidString(String input) {
+		return input != null && !input.trim().isEmpty();
+	}
+
+	public boolean isValidEmail(String email) {
+		String emailRegex = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
+		Pattern pattern = Pattern.compile(emailRegex);
+		return pattern.matcher(email).matches();
+	}
+
+	public boolean isValidPhoneNumber(String phoneNumber) {
+		String regex = "^\\d{10}$";
+		return Pattern.matches(regex, phoneNumber);
+	}
+
+	public boolean isValidFullName(String fullName) {
+
+		String regex = "^[\\p{L} .'-]+$";
+		return Pattern.matches(regex, fullName);
 	}
 
 }
