@@ -25,20 +25,42 @@ public class DAO_KhachHang {
 		return khachHangList;
 	}
 
-	public void addKhachHang(KhachHang kh) {
-		Connection conn = ConnectDB.getConnection();
-		String query = "INSERT INTO KhachHang (tenKH, soDT, email, diaChi) VALUES (?, ?, ?, ?)";
+	public boolean addKhachHang(KhachHang kh) {
+	    Connection conn = ConnectDB.getConnection();
+	    
+	    // Truy vấn để kiểm tra sự tồn tại của khách hàng
+	    String checkQuery = "SELECT COUNT(*) FROM KhachHang WHERE soDT = ?";
+	    
+	    // Truy vấn để thêm khách hàng
+	    String insertQuery = "INSERT INTO KhachHang (tenKH, soDT, email, diaChi) VALUES (?, ?, ?, ?)";
 
-		try (PreparedStatement pstmt = conn.prepareStatement(query)) {
-			pstmt.setString(1, kh.getTenKH());
-			pstmt.setString(2, kh.getSoDT());
-			pstmt.setString(3, kh.getEmail());
-			pstmt.setString(4, kh.getDiaChi());
-			pstmt.executeUpdate();
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+	    try {
+	        // Kiểm tra sự tồn tại của khách hàng
+	        try (PreparedStatement checkStmt = conn.prepareStatement(checkQuery)) {
+	            checkStmt.setString(1, kh.getSoDT());
+	            ResultSet rs = checkStmt.executeQuery();
+
+	            if (rs.next() && rs.getInt(1) > 0) {
+	                // Khách hàng đã tồn tại
+	                return false; // Trả về false nếu khách hàng đã tồn tại
+	            }
+	        }
+
+	        // Nếu chưa tồn tại, thêm mới khách hàng
+	        try (PreparedStatement pstmt = conn.prepareStatement(insertQuery)) {
+	            pstmt.setString(1, kh.getTenKH());
+	            pstmt.setString(2, kh.getSoDT());
+	            pstmt.setString(3, kh.getEmail());
+	            pstmt.setString(4, kh.getDiaChi());
+	            pstmt.executeUpdate();
+	            return true; // Trả về true nếu thêm thành công
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	        return false; // Trả về false nếu có lỗi xảy ra
+	    }
 	}
+
 
 	public void updateKhachHang(KhachHang kh) {
 		Connection conn = ConnectDB.getConnection();

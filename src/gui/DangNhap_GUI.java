@@ -45,7 +45,7 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
 	private JPanel pnlButton;
 	private JButton btnDangNhap;
 	
-	private TaiKhoan_DAO taiKhoan_DAO = new TaiKhoan_DAO();
+	
 	
 	public DangNhap_GUI() {
 		setTitle("Quản lý đặt bàn");
@@ -53,10 +53,10 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 		setVisible(true);
-//		DAO_Ban dao_BanTest = new DAO_Ban();
-//		for (int i = 1; i <=18; i++) {
-//			dao_BanTest.capNhatTrangThaiBanById(i, false);
-//		}
+		DAO_Ban dao_BanTest = new DAO_Ban();
+		for (int i = 1; i <=18; i++) {
+			dao_BanTest.capNhatTrangThaiBanById(i, false);
+		}
 		
 		pnlDangNhap = new JPanel(new GridBagLayout()){
             /**
@@ -125,6 +125,7 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
 		Object o = e.getSource();
 		if (o.equals(btnDangNhap)) {
 			String username = txtTaiKhoan.getText();
+			@SuppressWarnings("deprecation")
 			String password = txtMatKhau.getText();
 			
 			TaiKhoan_DAO taiKhoan_DAO = new TaiKhoan_DAO();
@@ -138,8 +139,6 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
 				this.dispose();
 				FormManHinhChinh newFrm = new FormManHinhChinh(nhanVien);
 				newFrm.setVisible(true);
-//				FormMenu formMenu = new FormMenu(tk);
-//				formMenu.setVisible(true);
 			}
 			else {
 				JOptionPane.showMessageDialog(null, "Sai tên tài khoản hoặc mật khẩu!!!");

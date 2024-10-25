@@ -233,7 +233,7 @@ public class FormMenu extends JFrame implements ActionListener{
 			
 		}
 		else if (o.equals(mniDSKhuyenMai)) {
-			this.dispose();
+			
 			KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI();
 			khuyenMaiGUI.setVisible(true);
 		}
@@ -247,8 +247,9 @@ public class FormMenu extends JFrame implements ActionListener{
 			
 		}
 		else if (o.equals(mniDSMonAn)) {
-			this.dispose();
+		
 			MonAnGUI monAnGUI = new MonAnGUI();
+			monAnGUI.setVisible(true);
 			
 			
 		}
@@ -256,7 +257,7 @@ public class FormMenu extends JFrame implements ActionListener{
 			
 		}
 		else if (o.equals(mniQuanLiKhachHang)) {
-			this.dispose();
+			
 	            KhachHangGUI khachHang = new KhachHangGUI();
 	            khachHang.setVisible(true);
 		}

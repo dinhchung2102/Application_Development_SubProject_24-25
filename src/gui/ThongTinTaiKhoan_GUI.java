@@ -20,6 +20,7 @@ import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 import dao.TaiKhoan_DAO;
+import entity.NhanVien;
 import entity.TaiKhoan;
 
 public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
@@ -74,7 +75,7 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	private JPanel pnlDiaChi;
 	private JLabel lblDiaChi;
 
-	public ThongTinTaiKhoan_GUI() {
+	public ThongTinTaiKhoan_GUI(NhanVien nhanVien) {
 		setTitle("Quản lý đặt bàn");
         setExtendedState(JFrame.MAXIMIZED_BOTH); // Full màn hình
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -266,7 +267,7 @@ public class ThongTinTaiKhoan_GUI extends JFrame implements ActionListener {
 	}
 
 	public ThongTinTaiKhoan_GUI(TaiKhoan tk) {
-		this();
+		
 		this.taiKhoan = tk;
 		mnuTaiKhoan.setText("Nhân viên: " + taiKhoan.getNhanVien().getTenNV());
 		lblUsername.setText("Username: " + taiKhoan.getTenDangNhap());

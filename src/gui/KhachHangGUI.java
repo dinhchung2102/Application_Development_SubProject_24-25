@@ -8,18 +8,15 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
-public class KhachHangGUI extends FormMenu {
+public class KhachHangGUI extends JFrame {
     private static final long serialVersionUID = 1L;
 
     private JButton addButton, deleteButton, updateButton, searchButton;
     private JTextField searchField, nameField, phoneField, emailField, addressField;
     private JTable customerTable;
     private DefaultTableModel tableModel;
-    private String currentCustomerId = "AAA000";
 
     public KhachHangGUI() {
         setTitle("Customer Management");
@@ -132,7 +129,12 @@ public class KhachHangGUI extends FormMenu {
         // Tạo bảng với các cột
         String[] columnNames = {"Mã khách hàng", "Tên khách hàng", "Số điện thoại", "Email", "Địa chỉ"};
         tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
             public boolean isCellEditable(int row, int column) {
                 return false; // Không cho phép chỉnh sửa trực tiếp
             }
@@ -169,12 +171,20 @@ public class KhachHangGUI extends FormMenu {
 
             if (!name.isEmpty() && isValidPhoneNumber(phone) && !email.isEmpty() && !address.isEmpty()) {
                 KhachHang kh = new KhachHang(0, name, phone, email, address);
-                new DAO_KhachHang().addKhachHang(kh);
-                loadData();
-                nameField.setText("");
-                phoneField.setText("");
-                emailField.setText("");
-                addressField.setText("");
+                //boolean isAddedKhachHang = new DAO_KhachHang().addKhachHang(kh);
+                if(new DAO_KhachHang().addKhachHang(kh)) {
+                	loadData();
+                    nameField.setText("");
+                    phoneField.setText("");
+                    emailField.setText("");
+                    addressField.setText("");
+                    JOptionPane.showMessageDialog(this, "Thêm thành công khách hàng");
+                }
+                else {
+					JOptionPane.showMessageDialog(this, "Số điện thoại đã được đăng ký");
+				}
+                
+                
             } else {
                 JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin và số điện thoại hợp lệ!");
             }
