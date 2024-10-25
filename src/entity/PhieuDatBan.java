@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 
 public class PhieuDatBan {
 	private int maPhieuDatBan;
-	private Date ngayTaoPhieu;
+	private LocalDateTime ngayTaoPhieu;
 	private LocalDateTime thoiGianDatBan;
 	private KhachHang khachHang;
 	private NhanVien nhanVien;
@@ -16,10 +16,10 @@ public class PhieuDatBan {
 	public void setMaPhieuDatBan(int maPhieuDatBan) {
 		this.maPhieuDatBan = maPhieuDatBan;
 	}
-	public Date getNgayTaoPhieu() {
+	public LocalDateTime getNgayTaoPhieu() {
 		return ngayTaoPhieu;
 	}
-	public void setNgayTaoPhieu(Date ngayTaoPhieu) {
+	public void setNgayTaoPhieu(LocalDateTime ngayTaoPhieu) {
 		this.ngayTaoPhieu = ngayTaoPhieu;
 	}
 	public LocalDateTime getThoiGianDatBan() {
@@ -46,7 +46,7 @@ public class PhieuDatBan {
 	public void setBan(Ban ban) {
 		this.ban = ban;
 	}
-	public PhieuDatBan(int maPhieuDatBan, Date ngayTaoPhieu, LocalDateTime thoiGianDatBan, KhachHang khachHang,
+	public PhieuDatBan(int maPhieuDatBan, LocalDateTime ngayTaoPhieu, LocalDateTime thoiGianDatBan, KhachHang khachHang,
 			NhanVien nhanVien, Ban ban) {
 		super();
 		this.maPhieuDatBan = maPhieuDatBan;
@@ -56,7 +56,7 @@ public class PhieuDatBan {
 		this.nhanVien = nhanVien;
 		this.ban = ban;
 	}
-	public PhieuDatBan(Date ngayTaoPhieu, LocalDateTime thoiGianDatBan, KhachHang khachHang, NhanVien nhanVien,
+	public PhieuDatBan(LocalDateTime ngayTaoPhieu, LocalDateTime thoiGianDatBan, KhachHang khachHang, NhanVien nhanVien,
 			Ban ban) {
 		super();
 		this.ngayTaoPhieu = ngayTaoPhieu;

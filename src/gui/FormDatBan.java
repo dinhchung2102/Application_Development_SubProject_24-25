@@ -137,6 +137,8 @@ public class FormDatBan extends FormMenu {
 	private JPanel pnlSearchMonAn;
 	private JTextField txtTimMon;
 	private JButton btnTimMon;
+	private JPanel pnlButtonDatMon;
+	private JButton btnThemMon;
 
 	public FormDatBan(Integer maBan, String khuVuc, NhanVien nhanVien) {
 		this.nhanVien = nhanVien;
@@ -627,12 +629,19 @@ public class FormDatBan extends FormMenu {
 		// Thêm bảng vào cuộn
 		scrollPane = new JScrollPane(table);
 		scrollPane.setBackground(Color.white);
-		scrollPane.setPreferredSize(new Dimension(500, 550));
+		scrollPane.setPreferredSize(new Dimension(500, 300));
+		
+		pnlButtonDatMon = new JPanel();
+		pnlButtonDatMon.setLayout(new BoxLayout(pnlButtonDatMon, BoxLayout.X_AXIS));
+		
+		btnThemMon = new JButton("THÊM");
+		pnlButtonDatMon.add(btnThemMon);
 		
 		pnlGoiMon.add(Box.createVerticalStrut(10));
 		pnlGoiMon.add(pnlSearchMonAn);
 		pnlGoiMon.add(Box.createVerticalStrut(10));
 		pnlGoiMon.add(scrollPane);
+		pnlGoiMon.add(pnlButtonDatMon);
 		pnlGoiMon.add(Box.createVerticalStrut(20));
 		
 
@@ -761,18 +770,71 @@ public class FormDatBan extends FormMenu {
 		                dao_KhachHang.addKhachHang(khachHangMoi);
 		                // thêm phiếu, thêm chi tiết phiếu	
 		                
+		                LocalDateTime hienTaiDateTime = LocalDateTime.now();
 		                PhieuDatBan_DAO phieuDatBan_DAO = new PhieuDatBan_DAO();
-		                PhieuDatBan phieuDatBan = new PhieuDatBan();
-		                phieuDatBan_DAO.themPhieuDatBan(null);
+		                
+		                //Lay thong tin thoi gian dat ban của khách hàng
+		                java.util.Date selectedDate = dateChooserNgayDen.getDate();
+		                LocalDateTime gioDat = LocalDateTime.ofInstant(selectedDate.toInstant(), java.time.ZoneId.systemDefault());
+
+		                // Lấy giờ và phút từ JComboBox
+		                int selectedHour = Integer.parseInt((String) comboBoxGio.getSelectedItem());
+		                int selectedMinute = Integer.parseInt((String) comboBoxPhut.getSelectedItem());
+
+		                // Gán giờ và phút
+		                gioDat = gioDat.withHour(selectedHour).withMinute(selectedMinute);
+		                
+		                //Lấy thông tin khách hàng đã đặt
+		                KhachHang khachHangDat = dao_KhachHang.getKhachHangBySDT(txtSDT.getText()); 
+		                dao_KhachHang.getKhachHangBySDT(khachHangMoi.getSoDT());
+		                
+		                //Lấy thông tin bàn đã đặt
+		                DAO_Ban dao_Ban = new DAO_Ban();
+		                Ban banDat = dao_Ban.getBanById((int) comboBoxBan.getSelectedItem());
+		                
+		                //Thêm phiếu đặt bàn
+		                PhieuDatBan phieuDatBan = new PhieuDatBan(hienTaiDateTime, gioDat, khachHangDat, nhanVien, banDat  );
+		                phieuDatBan_DAO.themPhieuDatBan(phieuDatBan);
 		                
 		                
 		               
 		            } else if (radioBtnKHVangLai.isSelected()) {
 		                // Khách vãng lai đặt bàn, 
 		                // thêm phiếu, thêm chi tiết phiếu
+// thêm phiếu, thêm chi tiết phiếu	
+		                
+		                LocalDateTime hienTaiDateTime = LocalDateTime.now();
+		                PhieuDatBan_DAO phieuDatBan_DAO = new PhieuDatBan_DAO();
+		                
+		                //Lay thong tin thoi gian dat ban của khách hàng
+		                java.util.Date selectedDate = dateChooserNgayDen.getDate();
+		                LocalDateTime gioDat = LocalDateTime.ofInstant(selectedDate.toInstant(), java.time.ZoneId.systemDefault());
+
+		                // Lấy giờ và phút từ JComboBox
+		                int selectedHour = (Integer) comboBoxGio.getSelectedItem();
+		                int selectedMinute = (Integer) comboBoxPhut.getSelectedItem();
+
+		                // Gán giờ và phút
+		                gioDat = gioDat.withHour(selectedHour).withMinute(selectedMinute);
+		                
+		                //Lấy thông tin khách hàng đã đặt
+		                DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
+		                KhachHang khachHangDat = dao_KhachHang.getKhachHangBySDT(txtSDT.getText());
+		                
+		    
+		                
+		                //Lấy thông tin bàn đã đặt
+		                DAO_Ban dao_Ban = new DAO_Ban();
+		                Ban banDat = dao_Ban.getBanById((int) comboBoxBan.getSelectedItem());
+		                
+		                //Thêm phiếu đặt bàn
+		                PhieuDatBan phieuDatBan = new PhieuDatBan(hienTaiDateTime, gioDat, khachHangDat, nhanVien, banDat);
+		                phieuDatBan_DAO.themPhieuDatBan(phieuDatBan);
 		            	
 		            } else {
 		                // Khách hàng cũ đặt bàn
+		            	PhieuDatBan_DAO phieuDatBan_DAO = new PhieuDatBan_DAO();
+		            	
 		                // thêm phiếu, thêm chi tiết phiếu, TT
 		            }
 		        } else if (radioBtnSuDungNgay.isSelected()) {
@@ -787,6 +849,16 @@ public class FormDatBan extends FormMenu {
 		                // thêm phiếu, thêm chi tiết phiếu
 		            } else {
 		                // Khách hàng cũ đặt bàn
+
+		                
+//		                rivate int maPhieuDatBan;
+//		            	private Date ngayTaoPhieu;
+//		            	private LocalDateTime thoiGianDatBan;
+//		            	private KhachHang khachHang;
+//		            	private NhanVien nhanVien;
+//		            	private Ban ban;
+		            	//Thêm phiếu đặt bàn:
+		            	
 		                // thêm phiếu, thêm chi tiết phiếu, TT
 		            }
 		        }

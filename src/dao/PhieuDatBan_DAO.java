@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
 import connectDB.ConnectDB;
@@ -33,7 +34,10 @@ public class PhieuDatBan_DAO {
 
 			while (rs.next()) {
 				int maPhieuDatBan = rs.getInt("maPhieuDatBan");
-				Date ngayTaoPhieu = rs.getDate("ngayTaoPhieu");
+				LocalDateTime ngayTaoPhieu = rs.getDate("ngayTaoPhieu").toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime();
+
 					Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
 				LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
 				KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
@@ -61,8 +65,9 @@ public class PhieuDatBan_DAO {
 			ResultSet rs = pstm.executeQuery();
 			while (rs.next()) {
 				int maPhieuDatBan = rs.getInt("maPhieuDatBan");
-				Date ngayTaoPhieu = rs.getDate("ngayTaoPhieu");
-					Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
+				Timestamp timestampNgayTaoPhieu = rs.getTimestamp("ngayTaoPhieu");
+				LocalDateTime ngayTaoPhieu = timestampNgayTaoPhieu.toLocalDateTime();
+				Timestamp timestampThoiGianDatBan = rs.getTimestamp("thoiGianDatBan");
 				LocalDateTime thoiGianDatBan = timestampThoiGianDatBan.toLocalDateTime();
 				KhachHang khachHang = khachHang_DAO.getKhachHangTheoMa(rs.getInt("maKH"));
 				NhanVien nhanVien = nhanVien_DAO.getNhanVienTheoMa(rs.getInt("maNV"));
@@ -110,8 +115,7 @@ public class PhieuDatBan_DAO {
 	        PreparedStatement pstm = con.prepareStatement(query, PreparedStatement.RETURN_GENERATED_KEYS);
 
 	        // Chuyển đổi dữ liệu và thiết lập các tham số
-	        Date sqlDateNgayTaoPhieu = new Date(phieuDatBan.getNgayTaoPhieu().getTime());
-	        pstm.setDate(1, sqlDateNgayTaoPhieu);
+	        pstm.setTimestamp(1, Timestamp.valueOf(phieuDatBan.getNgayTaoPhieu()));
 	        pstm.setTimestamp(2, Timestamp.valueOf(phieuDatBan.getThoiGianDatBan()));
 	        pstm.setInt(3, phieuDatBan.getKhachHang().getMaKH());
 	        pstm.setInt(4, phieuDatBan.getNhanVien().getMaNV());
