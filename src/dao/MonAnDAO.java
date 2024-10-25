@@ -76,5 +76,31 @@ public class MonAnDAO {
             e.printStackTrace();
         }
     }
+    public MonAn getMonAnTheoMa(int maMonAn) {
+		MonAn monAn = null;
+
+		Connection con = ConnectDB.getConnection();
+		String query = "select * from MonAn where maMon = ?";
+		try {
+			PreparedStatement pstm = con.prepareStatement(query);
+			pstm.setInt(1, maMonAn);
+			ResultSet rs = pstm.executeQuery();
+			while (rs.next()) {
+				int maMon = rs.getInt("maMon");
+				String tenMon = rs.getString("tenMon");
+				float giaTien = rs.getFloat("giaTien");
+				String moTa = rs.getString("moTa");
+
+				monAn = new MonAn(maMon, tenMon, giaTien, moTa);
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return monAn;
+
+	}
+
 
 }

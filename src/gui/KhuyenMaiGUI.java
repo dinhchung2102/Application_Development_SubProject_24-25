@@ -8,8 +8,6 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 public class KhuyenMaiGUI extends FormMenu {
@@ -29,15 +27,18 @@ public class KhuyenMaiGUI extends FormMenu {
         JPanel mainPanel = new JPanel(new BorderLayout());
 
         JPanel topPanel = new JPanel(new BorderLayout());
+        topPanel.setBackground(new Color(173, 216, 230)); // Màu xanh nhạt
+
         JPanel inputPanel = new JPanel();
+        inputPanel.setBackground(new Color(173, 216, 230)); // Màu xanh dương nhạt
         inputPanel.setLayout(new GridBagLayout()); // Sử dụng GridBagLayout để căn giữa
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10); // Khoảng cách giữa các thành phần
         gbc.fill = GridBagConstraints.HORIZONTAL;
         gbc.anchor = GridBagConstraints.CENTER;
 
-        Font labelFont = new Font("Arial", Font.BOLD, 16); // Chữ lớn hơn cho nhãn
-        Font fieldFont = new Font("Arial", Font.PLAIN, 16); // Chữ lớn hơn cho ô nhập
+        Font labelFont = new Font("Arial", Font.BOLD, 18); // Chữ lớn hơn cho nhãn
+        Font fieldFont = new Font("Arial", Font.PLAIN, 18); // Chữ lớn hơn cho ô nhập
 
         JLabel nameLabel = new JLabel("Tên Khuyến Mãi:");
         nameLabel.setFont(labelFont);
@@ -50,7 +51,7 @@ public class KhuyenMaiGUI extends FormMenu {
         gbc.gridx = 1;
         inputPanel.add(nameField, gbc);
 
-        JLabel minValueLabel = new JLabel("Giá Trị Tối Thiểu Áp Dụng:");
+        JLabel minValueLabel = new JLabel("Đơn Hàng Tối Thiểu:");
         minValueLabel.setFont(labelFont);
         gbc.gridx = 0;
         gbc.gridy = 1;
@@ -61,7 +62,7 @@ public class KhuyenMaiGUI extends FormMenu {
         gbc.gridx = 1;
         inputPanel.add(minValueField, gbc);
 
-        JLabel discountValueLabel = new JLabel("Giá Trị Khuyến Mãi:");
+        JLabel discountValueLabel = new JLabel("Giảm Giá:");
         discountValueLabel.setFont(labelFont);
         gbc.gridx = 0;
         gbc.gridy = 2;
@@ -95,6 +96,7 @@ public class KhuyenMaiGUI extends FormMenu {
         updateButton = new JButton("Thay Đổi Thông Tin");
 
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        buttonPanel.setBackground(new Color(173, 216, 230)); // Màu xanh dương nhạt
         addButton.setPreferredSize(new Dimension(150, 40));
         deleteButton.setPreferredSize(new Dimension(150, 40));
         updateButton.setPreferredSize(new Dimension(150, 40));
@@ -112,24 +114,27 @@ public class KhuyenMaiGUI extends FormMenu {
         searchButton = new JButton("Tìm kiếm");
         searchButton.setFont(labelFont); // Chữ lớn hơn cho nút tìm kiếm
 
-        JPanel         searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        searchPanel.add(new JLabel("Tìm kiếm:"));
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        searchPanel.setBackground(new Color(173, 216, 230)); // Màu xanh dương nhạt
+        JLabel searchLabel = new JLabel("Tìm kiếm:");
+        searchLabel.setFont(labelFont);
+        searchPanel.add(searchLabel);
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
 
         JPanel titlePanel = new JPanel(new BorderLayout());
+        titlePanel.setBackground(new Color(173, 216, 230)); // Màu xanh dương nhạt
         JLabel titleLabel = new JLabel("Thông tin khuyến mãi", JLabel.CENTER);
         titleLabel.setFont(new Font("Arial", Font.BOLD, 24));
         titleLabel.setForeground(Color.BLACK);
         titleLabel.setPreferredSize(new Dimension(400, 100));
         titleLabel.setHorizontalAlignment(SwingConstants.CENTER);
         titleLabel.setVerticalAlignment(SwingConstants.CENTER);
-
         titlePanel.add(titleLabel, BorderLayout.CENTER);
         titlePanel.setPreferredSize(new Dimension(400, 100));
 
         // Tạo bảng với các cột
-        String[] columnNames = {"Mã khuyến mãi", "Tên Khuyến Mãi", "Giá Trị Tối Thiểu", "Giá Trị Khuyến Mãi", "Mô Tả"};
+        String[] columnNames = {"Mã khuyến mãi", "Tên Khuyến Mãi", "Đơn Hàng Tối Thiểu", "Giảm Giá", "Mô Tả"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -149,13 +154,6 @@ public class KhuyenMaiGUI extends FormMenu {
 
         mainPanel.add(topPanel, BorderLayout.NORTH);
         mainPanel.add(centerPanel, BorderLayout.CENTER);
-
-        // Thêm JPanel chứa hình ảnh
-        JPanel imagePanel = new JPanel();
-        JLabel imageLabel = new JLabel(new ImageIcon("D:\\LeTrongThienPhat\\Nhom14_QuanLyDatBan\\image\\KH.webp"));
-        imagePanel.add(imageLabel);
-
-        mainPanel.add(imagePanel, BorderLayout.SOUTH);
 
         add(mainPanel);
 
@@ -195,7 +193,6 @@ public class KhuyenMaiGUI extends FormMenu {
                 String minValue = minValueField.getText();
                 String discountValue = discountValueField.getText();
                 String description = descriptionField.getText();
-
                 if (!name.isEmpty() && !minValue.isEmpty() && !discountValue.isEmpty() && !description.isEmpty()) {
                     int maKM = (int) tableModel.getValueAt(selectedRow, 0);
                     KhuyenMai km = new KhuyenMai(maKM, name, Double.parseDouble(minValue), Double.parseDouble(discountValue), description);
@@ -203,7 +200,7 @@ public class KhuyenMaiGUI extends FormMenu {
                     loadData();
                     JOptionPane.showMessageDialog(null, "Cập nhật thông tin khuyến mãi thành công!");
                 } else {
-                    JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
+                	JOptionPane.showMessageDialog(null, "Vui lòng nhập đầy đủ thông tin!");
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Vui lòng chọn một khuyến mãi để thay đổi thông tin!");
@@ -217,7 +214,6 @@ public class KhuyenMaiGUI extends FormMenu {
                 for (int i = 0; i < tableModel.getRowCount(); i++) {
                     String promotionId = String.valueOf(tableModel.getValueAt(i, 0));
                     String name = String.valueOf(tableModel.getValueAt(i, 1));
-
                     if (promotionId.equalsIgnoreCase(keyword) || name.equalsIgnoreCase(keyword)) {
                         promotionTable.setRowSelectionInterval(i, i);
                         promotionTable.scrollRectToVisible(promotionTable.getCellRect(i, 0, true));
@@ -225,7 +221,6 @@ public class KhuyenMaiGUI extends FormMenu {
                         break;
                     }
                 }
-
                 if (!found) {
                     JOptionPane.showMessageDialog(null, "Không tìm thấy khuyến mãi với thông tin này!");
                 }
@@ -240,8 +235,8 @@ public class KhuyenMaiGUI extends FormMenu {
                 int selectedRow = promotionTable.getSelectedRow();
                 if (selectedRow >= 0) {
                     nameField.setText((String) tableModel.getValueAt(selectedRow, 1));
-                    minValueField.setText((String) tableModel.getValueAt(selectedRow, 2));
-                    discountValueField.setText((String) tableModel.getValueAt(selectedRow, 3));
+                    minValueField.setText(String.valueOf(tableModel.getValueAt(selectedRow, 2)));
+                    discountValueField.setText(String.valueOf(tableModel.getValueAt(selectedRow, 3)));
                     descriptionField.setText((String) tableModel.getValueAt(selectedRow, 4));
                 }
             }
@@ -256,7 +251,6 @@ public class KhuyenMaiGUI extends FormMenu {
         KhuyenMaiDAO khuyenMaiDAO = new KhuyenMaiDAO();
         List<KhuyenMai> khuyenMaiList = khuyenMaiDAO.getAllKhuyenMai();
         tableModel.setRowCount(0); // Clear existing data
-
         for (KhuyenMai km : khuyenMaiList) {
             tableModel.addRow(new Object[]{km.getMaKM(), km.getTenKM(), km.getDonHangToiThieu(), km.getGiamGia(), km.getMoTa()});
         }

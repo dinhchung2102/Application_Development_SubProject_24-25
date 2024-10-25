@@ -233,7 +233,9 @@ public class FormMenu extends JFrame implements ActionListener{
 			
 		}
 		else if (o.equals(mniDSKhuyenMai)) {
-			
+			this.dispose();
+			KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI();
+			khuyenMaiGUI.setVisible(true);
 		}
 		else if (o.equals(mniThemKhuyenMai)) {
 			

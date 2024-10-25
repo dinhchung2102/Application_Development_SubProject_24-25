@@ -93,5 +93,31 @@ public class DAO_KhachHang {
 		}
 		return khachHang;
 	}
+	public KhachHang getKhachHangTheoMa(int maKhachHang) {
+		KhachHang khachHang = null;
+
+		Connection con = ConnectDB.getConnection();
+		String query = "select * from KhachHang where maKH = ?";
+		try {
+			PreparedStatement pstm = con.prepareStatement(query);
+			pstm.setInt(1, maKhachHang);
+			ResultSet rs = pstm.executeQuery();
+			while (rs.next()) {
+				int maKH = rs.getInt("maKH");
+				String tenKH = rs.getString("tenKH");
+				String soDT = rs.getString("soDT");
+				String email = rs.getString("email");
+				String diaChi = rs.getString("diaChi");
+
+				khachHang = new KhachHang(maKH, tenKH, soDT, email, diaChi);
+			}
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return khachHang;
+
+	}
 	
 }

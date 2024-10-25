@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
@@ -48,11 +49,13 @@ import dao.DAO_KhachHang;
 import dao.DAO_KhuVuc;
 import dao.MonAnDAO;
 import dao.NhanVien_DAO;
+import dao.PhieuDatBan_DAO;
 import entity.Ban;
 import entity.KhachHang;
 import entity.KhuVuc;
 import entity.MonAn;
 import entity.NhanVien;
+import entity.PhieuDatBan;
 import entity.TaiKhoan;
 
 public class FormDatBan extends FormMenu {
@@ -538,6 +541,7 @@ public class FormDatBan extends FormMenu {
 		txtTienCoc = new JTextField();
 		txtTienCoc.setFont(txtFieldFont);
 		getTienCoc(maBan, (int) comboBoxSLKhach.getSelectedItem(), txtTienCoc);
+		
 		// ==============================ACTION LISTENER/[[[[]]]]PANEL TT DAT
 		// BAN========================
 		comboBoxBan.addActionListener(new ActionListener() {
@@ -734,88 +738,69 @@ public class FormDatBan extends FormMenu {
 		});
 
 		btnDatBan.addActionListener(e -> {
-
-			// Kiểm tra số điện thoại và tên không được để trống
-			if (!isValidString(txtSDT.getText()) || !isValidString(txtTenKH.getText())) {
-				JOptionPane.showMessageDialog(this, "Số điện thoại và tên không được để trống");
-			} else if (!isValidPhoneNumber(txtSDT.getText())) {
-				// Kiểm tra định dạng số điện thoại
-				JOptionPane.showMessageDialog(this, "Số điện thoại sai định dạng");
-			} else if (!isValidFullName(txtTenKH.getText())) {
-				// Kiểm tra định dạng tên
-				JOptionPane.showMessageDialog(this, "Tên sai định dạng");
-			} else if (!txtEmail.getText().isEmpty() && !isValidEmail(txtEmail.getText())) {
-				// Nếu email không rỗng thì kiểm tra định dạng
-				JOptionPane.showMessageDialog(this, "Email sai định dạng");
-			} else {
-				// Nếu tất cả đều hợp lệ
-				if(radioBtnDungSau.isSelected()) {
-					if(radioBtnKHMoi.isSelected()) {
-						//Khách hàng  mới đặt bàn: 
-						
-						
-						//thêm khách hàng
-						DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
-						//"INSERT INTO KhachHang (tenKH, soDT, email, diaChi) VALUES (?, ?, ?, ?)";
-						KhachHang khachHangMoi = new KhachHang(0, txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(), txtDiaChi.getText());
-						dao_KhachHang.addKhachHang(khachHangMoi);
-						
-						//thêm phiếu, 
-						
-						
-						
-						//thêm chi tiết phiếu
-						
-						
-						
-						//Cập nhật trạng thái bàn
-						DAO_Ban dao_Ban = new DAO_Ban();
-						if(dao_Ban.capNhatTrangThaiBanById((int)comboBoxBan.getSelectedItem(), true)) {
-							JOptionPane.showMessageDialog(this,"Đã đặt bàn thành công");
-							this.dispose();
-							new FormManHinhChinh(nhanVien);
-						}
-						comboBoxBan.getSelectedItem();
-					}
-					else if (radioBtnKHVangLai.isSelected()) {
-						//Khách vãng lai đặt bàn, 
-						
-						
-						//thêm phiếu, 
-						
-						
-						//thêm chi tiết phiếu
-						
-						
-						//Cập nhật trạng thái
-						DAO_Ban dao_Ban = new DAO_Ban();
-						if(dao_Ban.capNhatTrangThaiBanById((int)comboBoxBan.getSelectedItem(), true)) {
-							JOptionPane.showMessageDialog(this,"Đã đặt bàn thành công");
-							this.dispose();
-							new FormManHinhChinh(nhanVien);
-						}
-						comboBoxBan.getSelectedItem();
-					}
-					else {
-						//Khách hàng cũ đặt bàn//======================
-						//Cập nhật trạng thái bàn
-						DAO_Ban dao_Ban = new DAO_Ban();
-						if(dao_Ban.capNhatTrangThaiBanById((int)comboBoxBan.getSelectedItem(), true)) {
-							JOptionPane.showMessageDialog(this,"Đã đặt bàn thành công");
-							this.dispose();
-							new FormManHinhChinh(nhanVien);
-						}
-						comboBoxBan.getSelectedItem();
-						//thêm phiếu, thêm chi tiết phiếu, TT
-					}
-				}
-				else if (radioBtnSuDungNgay.isSelected()) {
-					
-				}
-				
-			}
-
+		    // Kiểm tra số điện thoại và tên không được để trống
+		    if (!isValidString(txtSDT.getText()) || !isValidString(txtTenKH.getText())) {
+		        JOptionPane.showMessageDialog(this, "Số điện thoại và tên không được để trống");
+		    } else if (!isValidPhoneNumber(txtSDT.getText())) {
+		        // Kiểm tra định dạng số điện thoại
+		        JOptionPane.showMessageDialog(this, "Số điện thoại sai định dạng");
+		    } else if (!isValidFullName(txtTenKH.getText())) {
+		        // Kiểm tra định dạng tên
+		        JOptionPane.showMessageDialog(this, "Tên sai định dạng");
+		    } else if (!txtEmail.getText().isEmpty() && !isValidEmail(txtEmail.getText())) {
+		        // Nếu email không rỗng thì kiểm tra định dạng
+		        JOptionPane.showMessageDialog(this, "Email sai định dạng");
+		    } else {
+		        // Nếu tất cả đều hợp lệ
+		        if (radioBtnDungSau.isSelected()) {
+		            if (radioBtnKHMoi.isSelected()) {
+		                // Khách hàng mới đặt bàn: 
+		                // thêm khách hàng
+		                DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
+		                KhachHang khachHangMoi = new KhachHang(0, txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(), txtDiaChi.getText());
+		                dao_KhachHang.addKhachHang(khachHangMoi);
+		                // thêm phiếu, thêm chi tiết phiếu	
+		                
+		                PhieuDatBan_DAO phieuDatBan_DAO = new PhieuDatBan_DAO();
+		                PhieuDatBan phieuDatBan = new PhieuDatBan();
+		                phieuDatBan_DAO.themPhieuDatBan(null);
+		                
+		                
+		               
+		            } else if (radioBtnKHVangLai.isSelected()) {
+		                // Khách vãng lai đặt bàn, 
+		                // thêm phiếu, thêm chi tiết phiếu
+		            	
+		            } else {
+		                // Khách hàng cũ đặt bàn
+		                // thêm phiếu, thêm chi tiết phiếu, TT
+		            }
+		        } else if (radioBtnSuDungNgay.isSelected()) {
+		            if (radioBtnKHMoi.isSelected()) {
+		                // Khách hàng mới đặt bàn: 
+		                DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
+		                KhachHang khachHangMoi = new KhachHang(0, txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(), txtDiaChi.getText());
+		                dao_KhachHang.addKhachHang(khachHangMoi);
+		                // thêm phiếu, thêm chi tiết phiếu
+		            } else if (radioBtnKHVangLai.isSelected()) {
+		                // Khách vãng lai đặt bàn, 
+		                // thêm phiếu, thêm chi tiết phiếu
+		            } else {
+		                // Khách hàng cũ đặt bàn
+		                // thêm phiếu, thêm chi tiết phiếu, TT
+		            }
+		        }
+		        
+		        // Cập nhật trạng thái bàn
+		        DAO_Ban dao_Ban = new DAO_Ban();
+		        if (dao_Ban.capNhatTrangThaiBanById((int)comboBoxBan.getSelectedItem(), true)) {
+		            JOptionPane.showMessageDialog(this, "Đã đặt bàn thành công");
+		            this.dispose();
+		            new FormManHinhChinh(nhanVien);
+		        }
+		    }
 		});
+
 		pnlButton.add(Box.createHorizontalStrut(10));
 		pnlButton.add(btnBack);
 		pnlButton.add(Box.createHorizontalStrut(10));

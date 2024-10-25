@@ -54,7 +54,10 @@ public class DangNhap_GUI extends JFrame implements ActionListener{
         setLocationRelativeTo(null);
 		setVisible(true);
 		DAO_Ban dao_BanTest = new DAO_Ban();
-		dao_BanTest.capNhatTrangThaiBanById(7, false);
+		for (int i = 1; i <=18; i++) {
+			dao_BanTest.capNhatTrangThaiBanById(i, false);
+		}
+		
 		pnlDangNhap = new JPanel(new GridBagLayout()){
             /**
 			 * 

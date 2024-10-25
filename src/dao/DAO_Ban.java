@@ -103,7 +103,7 @@ public class DAO_Ban {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return ban; // Trả về đối tượng Ban hoặc null nếu không tìm thấy
+        return ban;
     }
     
 }
