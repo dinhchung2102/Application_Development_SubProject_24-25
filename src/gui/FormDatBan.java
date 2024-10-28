@@ -7,11 +7,13 @@ import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.time.LocalDateTime;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.regex.Pattern;
 
@@ -637,9 +639,8 @@ public class FormDatBan extends JFrame {
 		comboBoxBan.setBackground(whiteColor);
 		comboBoxBan.setFont(txtFieldFont);
 
-		getDataToComboBox(comboBoxKhuVuc, comboBoxBan, maBan, khuVuc);
-		comboBoxKhuVuc.setSelectedItem(khuVuc);
-		comboBoxBan.setSelectedItem(maBan);
+		
+		
 
 		pnlViTriBan.add(lblKhuVuc);
 		pnlViTriBan.add(Box.createHorizontalStrut(25));
@@ -654,7 +655,9 @@ public class FormDatBan extends JFrame {
 		comboBoxSLKhach.setBackground(backgroundColor);
 		comboBoxSLKhach.setBackground(whiteColor);
 		comboBoxSLKhach.setFont(txtFieldFont);
-		handleCBBSoLuong(comboBoxBan, comboBoxSLKhach);
+		getDataToComboBox(comboBoxKhuVuc, comboBoxBan, comboBoxSLKhach,  maBan, khuVuc);
+		comboBoxKhuVuc.setSelectedItem(khuVuc);
+		comboBoxBan.setSelectedItem(maBan);
 
 		pnlViTriBan.add(lblSoKhach);
 		pnlViTriBan.add(comboBoxSLKhach);
@@ -747,18 +750,20 @@ public class FormDatBan extends JFrame {
 
 		// ==============================ACTION LISTENER/[[[[]]]]PANEL TT DAT
 		// BAN========================
+		
 		comboBoxBan.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				handleCBBSoLuong(comboBoxBan, comboBoxSLKhach);
 				getTienCoc((int) comboBoxBan.getSelectedItem(), (int) comboBoxSLKhach.getSelectedItem(), txtTienCoc);
-
 			}
 		});
-		comboBoxSLKhach.addActionListener(e -> {
+		//OK combobox SL Khách
+		comboBoxSLKhach.addActionListener(e->{
 			getTienCoc((int) comboBoxBan.getSelectedItem(), (int) comboBoxSLKhach.getSelectedItem(), txtTienCoc);
 		});
+		
+		
+		
 		
 
 		pnlTienCoc.add(lblTienCoc);
@@ -971,7 +976,7 @@ public class FormDatBan extends JFrame {
 								
 								new FormManHinhChinh(nhanVien);
 							} else {
-								JOptionPane.showMessageDialog(this, "Số điện thoại đã được đăng ký");
+								JOptionPane.showMessageDialog(this, "SỐ ĐIỆN THOẠI ĐÃ ĐƯỢC ĐĂNG KÝ");
 							}
 
 						} else {
@@ -984,7 +989,13 @@ public class FormDatBan extends JFrame {
 					} else {
 						// Khách hàng cũ đặt bàn
 						// Thêm phiếu đặt bàn
-						themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),(int) comboBoxBan.getSelectedItem(), nhanVien);
+						if(kiemTraNgayDat(dateChooserNgayDen)) {
+							themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),(int) comboBoxBan.getSelectedItem(), nhanVien);
+						}
+						else {
+							JOptionPane.showMessageDialog(this, "VUI LÒNG CHỌN MỘT NGÀY!!!");
+						}
+						
 
 					}
 				} else if (radioBtnSuDungNgay.isSelected()) {
@@ -1041,7 +1052,7 @@ public class FormDatBan extends JFrame {
 
 	}
 
-	private void getDataToComboBox(JComboBox<String> cbbKhuVuc, JComboBox<Integer> cbbBan, Integer maBan,
+	private void getDataToComboBox(JComboBox<String> cbbKhuVuc, JComboBox<Integer> cbbBan, JComboBox<Integer> cbbSoKhach, Integer maBan,
 			String khuVuc) {
 
 		DAO_KhuVuc dao_KhuVuc = new DAO_KhuVuc();
@@ -1064,11 +1075,18 @@ public class FormDatBan extends JFrame {
 				cbbBan.removeAllItems();
 
 				DAO_Ban daoBan = new DAO_Ban();
-				List<Ban> bans = daoBan.getBansByKhuVuc(cbbKhuVuc.getSelectedItem().toString());
+				List<Ban> bans = daoBan.getBansByKhuVuc((String) cbbKhuVuc.getSelectedItem());
 
 				for (Ban ban : bans) {
 					cbbBan.addItem(ban.getMaBan());
 				}
+				
+				int soGhe = daoBan.getSoGheByMaBan((Integer) cbbBan.getSelectedItem());
+				
+				for (int i = 1; i <= soGhe; i++) {
+					cbbSoKhach.addItem(i);
+				}
+
 
 			}
 		});
@@ -1076,10 +1094,12 @@ public class FormDatBan extends JFrame {
 	}
 
 	private void handleCBBSoLuong(JComboBox<Integer> cbbBan, JComboBox<Integer> cbbSoKhach) {
-		cbbSoKhach.removeAllItems();
+		if(cbbSoKhach != null) {
+			cbbSoKhach.removeAllItems();
+		}
+		
 		DAO_Ban dao_Ban = new DAO_Ban();
 		int soGhe = dao_Ban.getSoGheByMaBan((Integer) cbbBan.getSelectedItem());
-
 		for (int i = 1; i <= soGhe; i++) {
 			cbbSoKhach.addItem(i);
 		}
