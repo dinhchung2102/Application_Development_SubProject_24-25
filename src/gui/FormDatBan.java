@@ -43,12 +43,14 @@ import javax.swing.table.JTableHeader;
 
 import com.toedter.calendar.JDateChooser;
 
+import dao.ChiTietPhieuDatBan_DAO;
 import dao.DAO_Ban;
 import dao.DAO_KhachHang;
 import dao.DAO_KhuVuc;
 import dao.MonAnDAO;
 import dao.PhieuDatBan_DAO;
 import entity.Ban;
+import entity.ChiTietPhieuDatBan;
 import entity.KhachHang;
 import entity.KhuVuc;
 import entity.MonAn;
@@ -172,6 +174,10 @@ public class FormDatBan extends JFrame {
 	private JMenuItem mniTaoTaiKhoan;
 	private JMenuItem mniThongTinTaiKhoan;
 	private JMenuItem mniDangXuat;
+	private JButton btnKhaiVi;
+	private JButton btnAll;
+	private JButton btnNuoc;
+	private JButton btnMonChinh;
 
 	/*
 	 * 
@@ -758,7 +764,7 @@ public class FormDatBan extends JFrame {
 			for (int i = 1; i <= soGhe; i++) {
 				comboBoxSLKhach.addItem(i);
 			}
-			
+
 			updateTienCoc();
 		});
 
@@ -804,12 +810,14 @@ public class FormDatBan extends JFrame {
 		pnlGoiMon.setPreferredSize(new Dimension(30, 500));
 
 		pnlSearchMonAn = new JPanel();
+		pnlSearchMonAn.setBackground(backgroundColor);
 		pnlSearchMonAn.setLayout(new BoxLayout(pnlSearchMonAn, BoxLayout.X_AXIS));
 		pnlSearchMonAn.setPreferredSize(new Dimension(100, 10));
 
 		txtTimMon = new JTextField();
 		txtTimMon.setFont(txtFieldFont);
 		btnTimMon = new JButton("TÌM MÓN");
+		btnTimMon.setBackground(Color.green);
 		pnlSearchMonAn.add(txtTimMon);
 		pnlSearchMonAn.add(btnTimMon);
 
@@ -845,18 +853,36 @@ public class FormDatBan extends JFrame {
 		// Thêm bảng vào cuộn
 		scrollPane = new JScrollPane(table);
 		scrollPane.setBackground(Color.white);
-		scrollPane.setPreferredSize(new Dimension(500, 300));
+		scrollPane.setPreferredSize(new Dimension(800, 500));
 
 		pnlButtonDatMon = new JPanel();
 		pnlButtonDatMon.setLayout(new BoxLayout(pnlButtonDatMon, BoxLayout.X_AXIS));
+		pnlButtonDatMon.setBackground(backgroundColor);
 
 		btnThemMon = new JButton("THÊM");
+		btnThemMon.setBackground(Color.GREEN);
+
+		btnKhaiVi = new JButton("KHAI VỊ");
+		btnKhaiVi.setBackground(Color.white);
+		btnAll = new JButton("TẤT CẢ");
+		btnAll.setBackground(Color.BLUE);
+		btnNuoc = new JButton("NƯỚC");
+		btnNuoc.setBackground(Color.white);
+		btnMonChinh = new JButton("MÓN CHÍNH");
+		btnMonChinh.setBackground(Color.white);
+
+		pnlButtonDatMon.add(btnAll);
+		pnlButtonDatMon.add(btnKhaiVi);
+		pnlButtonDatMon.add(btnNuoc);
+		pnlButtonDatMon.add(btnMonChinh);
+		pnlButtonDatMon.add(Box.createHorizontalStrut(105));
 		pnlButtonDatMon.add(btnThemMon);
 
 		pnlGoiMon.add(Box.createVerticalStrut(10));
 		pnlGoiMon.add(pnlSearchMonAn);
 		pnlGoiMon.add(Box.createVerticalStrut(10));
 		pnlGoiMon.add(scrollPane);
+		pnlGoiMon.add(Box.createVerticalStrut(20));
 		pnlGoiMon.add(pnlButtonDatMon);
 		pnlGoiMon.add(Box.createVerticalStrut(20));
 
@@ -877,7 +903,7 @@ public class FormDatBan extends JFrame {
 
 		// ===============Table để load dữ liệu món ăn đã đặt của khách hàng
 		// =======================
-		String[] columnNamesTinhTien = { "STT", "Tên", "Đơn giá", "Số lượng", "Thành tiền" };
+		String[] columnNamesTinhTien = { "STT","Mã Món", "Tên", "Đơn giá", "Số lượng", "Thành tiền" };
 		Object[][] dataTinhTien = {
 
 		};
@@ -885,9 +911,17 @@ public class FormDatBan extends JFrame {
 		// Tạo model cho bảng
 		modelTinhTien = new DefaultTableModel(dataTinhTien, columnNamesTinhTien);
 		tableTinhTien = new JTable(modelTinhTien);
+		tableTinhTien.setBackground(Color.white);
+		tableTinhTien.setForeground(Color.blue); // Màu chữ
+		tableTinhTien.setFont(txtFieldFont);
+		tableTinhTien.setRowHeight(30);
 
-		tableTinhTien.getColumnModel().getColumn(0).setPreferredWidth(20);
-		tableTinhTien.getColumnModel().getColumn(3).setPreferredWidth(20);
+		tableTinhTien.getColumnModel().getColumn(0).setPreferredWidth(5);
+		tableTinhTien.getColumnModel().getColumn(1).setPreferredWidth(5);
+		tableTinhTien.getColumnModel().getColumn(2).setPreferredWidth(100);
+		tableTinhTien.getColumnModel().getColumn(3).setPreferredWidth(100);
+		tableTinhTien.getColumnModel().getColumn(4).setPreferredWidth(50);
+		tableTinhTien.getColumnModel().getColumn(5).setPreferredWidth(50);
 
 		// Thêm bảng vào cuộn
 		scrollPaneTinhTien = new JScrollPane(tableTinhTien);
@@ -961,6 +995,29 @@ public class FormDatBan extends JFrame {
 			newFrManHinhChinh.setVisible(true);
 
 		});
+		btnThemMon.addActionListener(e -> {
+			int selectedRow = table.getSelectedRow();
+			if (selectedRow != -1) {
+				// Lấy thông tin món ăn đã chọn
+				Object maMon = model.getValueAt(selectedRow, 0); // STT
+				Object tenMon = model.getValueAt(selectedRow, 1); // Tên
+				Object giaTien = model.getValueAt(selectedRow, 2); // Đơn giá
+
+				// Để số lượng mặc định là 1 (hoặc có thể thêm hộp thoại cho phép nhập số lượng)
+				int soLuong = 1;
+				float tienCoc = Float.parseFloat(txtTienCoc.getText());
+				float thanhTien = (float) giaTien * soLuong;
+
+				// Thêm vào bảng món đã đặt
+				
+				modelTinhTien.addRow(new Object[] { modelTinhTien.getRowCount() + 1,maMon, tenMon, giaTien, soLuong, thanhTien });
+
+				// Có thể cập nhật tổng tiền nếu cần
+				// Cập nhật lại tổng tiền ở đây nếu bạn có một ô để hiển thị tổng tiền
+			} else {
+				JOptionPane.showMessageDialog(null, "Vui lòng chọn món ăn để thêm!");
+			}
+		});
 
 		btnDatBan.addActionListener(e -> {
 			// Kiểm tra số điện thoại và tên không được để trống
@@ -985,10 +1042,22 @@ public class FormDatBan extends JFrame {
 						if (kiemTraNgayDat(dateChooserNgayDen)) {
 							if (themKhachHang(txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(),
 									txtDiaChi.getText())) {
-								themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
-										(int) comboBoxBan.getSelectedItem(), nhanVien);
+								int maPhieu = themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
+										(int) comboBoxBan.getSelectedItem(), nhanVien, false);
 								// Thêm chi tiết phiếu nữa là OK
-
+								for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
+								    int maMon = (int) modelTinhTien.getValueAt(i, 1); // Mã món
+								    float donGia = (float) modelTinhTien.getValueAt(i, 3);
+								    int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
+								    float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
+								    Float tienCoc = Float.parseFloat(txtTienCoc.getText());
+								    
+								    ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
+								    ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong, tienCoc, thanhTien, new MonAnDAO().getMonAnTheoMa(maMon), new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
+								    
+								    chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);  
+								}
+								JOptionPane.showMessageDialog(this, "THÊM KHÁCH HÀNG & ĐẶT BÀN THÀNH CÔNG");
 								new FormManHinhChinh(nhanVien);
 							} else {
 								JOptionPane.showMessageDialog(this, "SỐ ĐIỆN THOẠI ĐÃ ĐƯỢC ĐĂNG KÝ");
@@ -1006,11 +1075,27 @@ public class FormDatBan extends JFrame {
 						// Khách hàng cũ đặt bàn
 						// Thêm phiếu đặt bàn
 						if (kiemTraNgayDat(dateChooserNgayDen)) {
-							themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
-									(int) comboBoxBan.getSelectedItem(), nhanVien);
+							int maPhieu =  themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
+									(int) comboBoxBan.getSelectedItem(), nhanVien, false);
+							
+							 for (int i = 0; i < modelTinhTien.getRowCount(); i++) {
+								    int maMon = (int) modelTinhTien.getValueAt(i, 1); // Mã món
+								    float donGia = (float) modelTinhTien.getValueAt(i, 3);
+								    int soLuong = (int) modelTinhTien.getValueAt(i, 4); // Số lượng
+								    float thanhTien = (float) modelTinhTien.getValueAt(i, 5); // Thành tiền
+								    Float tienCoc = Float.parseFloat(txtTienCoc.getText());
+								    
+								    ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
+								    ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong, tienCoc, thanhTien, new MonAnDAO().getMonAnTheoMa(maMon), new PhieuDatBan_DAO().getPhieuDatBanTheoMa(maPhieu));
+								    
+								    chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTietPhieuDatBan);  
+							}
+							
 						} else {
 							JOptionPane.showMessageDialog(this, "VUI LÒNG CHỌN MỘT NGÀY!!!");
 						}
+						
+						
 
 					}
 				} else if (radioBtnSuDungNgay.isSelected()) {
@@ -1021,16 +1106,20 @@ public class FormDatBan extends JFrame {
 								txtEmail.getText(), txtDiaChi.getText());
 						dao_KhachHang.addKhachHang(khachHangMoi);
 						// thêm phiếu, thêm chi tiết phiếu
-
+						themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
+								(int) comboBoxBan.getSelectedItem(), nhanVien, true);
 						// cập nhật trạng thái bàn
 						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
 					} else if (radioBtnKHVangLai.isSelected()) {
 						// Khách vãng lai đặt bàn,
+
 						// thêm phiếu, thêm chi tiết phiếu
+						themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
+								(int) comboBoxBan.getSelectedItem(), nhanVien, true);
 						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
 					} else {
 						// Khách hàng cũ đặt bàn
-						capNhatTrangThaiBanBySelectedItem(comboBoxBan);
+					
 
 					}
 
@@ -1096,7 +1185,6 @@ public class FormDatBan extends JFrame {
 		for (int i = 1; i <= soGhe; i++) {
 			cbbSoKhach.addItem(i);
 		}
-		
 
 	}
 //
@@ -1131,13 +1219,14 @@ public class FormDatBan extends JFrame {
 	}
 
 	private void updateTienCoc() {
-	    if (comboBoxBan.getSelectedItem() != null && comboBoxSLKhach.getSelectedItem() != null) {
-	        int maBan = (Integer) comboBoxBan.getSelectedItem();
-	        int soKhach = (Integer) comboBoxSLKhach.getSelectedItem();
-	        float tienCocTam = getTienCoc(maBan, soKhach);
-	        txtTienCoc.setText(String.valueOf(tienCocTam));
-	    }
+		if (comboBoxBan.getSelectedItem() != null && comboBoxSLKhach.getSelectedItem() != null) {
+			int maBan = (Integer) comboBoxBan.getSelectedItem();
+			int soKhach = (Integer) comboBoxSLKhach.getSelectedItem();
+			float tienCocTam = getTienCoc(maBan, soKhach);
+			txtTienCoc.setText(String.valueOf(tienCocTam));
+		}
 	}
+
 	public boolean isValidString(String input) {
 		return input != null && !input.trim().isEmpty();
 	}
@@ -1162,9 +1251,9 @@ public class FormDatBan extends JFrame {
 	public void capNhatTrangThaiBanBySelectedItem(JComboBox<Integer> comboBoxBan) {
 		DAO_Ban dao_Ban = new DAO_Ban();
 		if (dao_Ban.capNhatTrangThaiBanById((int) comboBoxBan.getSelectedItem(), true)) {
-			JOptionPane.showMessageDialog(this, "Đã đặt bàn thành công");
-			this.dispose();
-			new FormManHinhChinh(nhanVien);
+			dispose();
+			FormManHinhChinh newFrManHinhChinh = new FormManHinhChinh(nhanVien);
+			newFrManHinhChinh.setVisible(true);
 		}
 	}
 
@@ -1178,20 +1267,25 @@ public class FormDatBan extends JFrame {
 
 	}
 
-	private void themPhieuDatBan(JComboBox<Integer> comboBoxGio, JComboBox<Integer> comboBoxPhut, String sdtKhachHang,
-			Integer maBanDat, NhanVien nhanVien) {
+	private int themPhieuDatBan(JComboBox<Integer> comboBoxGio, JComboBox<Integer> comboBoxPhut, String sdtKhachHang,
+			Integer maBanDat, NhanVien nhanVien, boolean dungNgay) {
+
 		LocalDateTime hienTaiDateTime = LocalDateTime.now();
 
 		// Lay thong tin thoi gian dat ban của khách hàng
 		java.util.Date selectedDate = dateChooserNgayDen.getDate();
+		LocalDateTime gioDat;
+		if (!dungNgay) {
+			gioDat = LocalDateTime.ofInstant(selectedDate.toInstant(), java.time.ZoneId.systemDefault());
+			// Lấy giờ và phút từ JComboBox
+			int selectedHour = (Integer) comboBoxGio.getSelectedItem();
+			int selectedMinute = (Integer) comboBoxPhut.getSelectedItem();
 
-		LocalDateTime gioDat = LocalDateTime.ofInstant(selectedDate.toInstant(), java.time.ZoneId.systemDefault());
+			gioDat = gioDat.withHour(selectedHour).withMinute(selectedMinute);
 
-		// Lấy giờ và phút từ JComboBox
-		int selectedHour = (Integer) comboBoxGio.getSelectedItem();
-		int selectedMinute = (Integer) comboBoxPhut.getSelectedItem();
-
-		gioDat = gioDat.withHour(selectedHour).withMinute(selectedMinute);
+		} else {
+			gioDat = hienTaiDateTime;
+		}
 
 		// Lấy thông tin khách hàng đã đặt
 		DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
@@ -1205,9 +1299,8 @@ public class FormDatBan extends JFrame {
 		// Thêm phiếu đặt bàn
 		PhieuDatBan_DAO phieuDatBan_DAO = new PhieuDatBan_DAO();
 		PhieuDatBan phieuDatBan = new PhieuDatBan(hienTaiDateTime, gioDat, khachHangDat, nhanVien, banDat);
-		phieuDatBan_DAO.themPhieuDatBan(phieuDatBan);
-		JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG");
-
+		 return phieuDatBan_DAO.themPhieuDatBan(phieuDatBan);
+//		JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG");
 	}
 
 	private boolean kiemTraNgayDat(JDateChooser dateChooserNgayDen) {
@@ -1216,6 +1309,20 @@ public class FormDatBan extends JFrame {
 			return true;
 		}
 		return false;
+	}
+	private void themChiTietPhieu(ChiTietPhieuDatBan chiTiet) {
+	    ChiTietPhieuDatBan_DAO chiTietPhieuDatBan_DAO = new ChiTietPhieuDatBan_DAO();
+	    
+	    boolean result = chiTietPhieuDatBan_DAO.themChiTietPhieuDatBan(chiTiet);
+	    if (result) {
+	        JOptionPane.showMessageDialog(null, "Thêm chi tiết phiếu thành công!");
+	    } else {
+	        JOptionPane.showMessageDialog(null, "Thêm chi tiết phiếu không thành công!");
+	    }
+	    
+	    
+	   
+	    
 	}
 
 }

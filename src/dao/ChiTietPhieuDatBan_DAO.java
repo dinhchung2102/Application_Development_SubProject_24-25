@@ -28,13 +28,15 @@ public class ChiTietPhieuDatBan_DAO {
 			ResultSet rs = stm.executeQuery(query);
 
 			while (rs.next()) {
-				int maChiTietPhieuDatBan = rs.getInt("maChiTietPhieuDatBan");
+				//int maChiTietPhieuDatBan = rs.getInt("maChiTietPhieuDatBan");
+				float donGia = rs.getFloat("donGia");
 				int soLuong = rs.getInt("soLuong");
+				float tienCoc = rs.getFloat("tienCoc");
 				float thanhTien = rs.getFloat("thanhTien");
 				MonAn monAn = monAn_DAO.getMonAnTheoMa(rs.getInt("maMon"));
 				PhieuDatBan phieuDatBan = phieuDatBan_DAO.getPhieuDatBanTheoMa(rs.getInt("maPhieuDatBan"));
 				
-				ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(maChiTietPhieuDatBan, soLuong, thanhTien, monAn, phieuDatBan);
+				ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia ,soLuong,tienCoc, thanhTien, monAn, phieuDatBan);
 				dsChiTietPhieuDatBan.add(chiTietPhieuDatBan);
 			}
 		} catch (SQLException e) {
@@ -55,13 +57,14 @@ public class ChiTietPhieuDatBan_DAO {
 			ResultSet rs = pstm.executeQuery();
 
 			while (rs.next()) {
-				int maChiTietPhieuDatBan = rs.getInt("maChiTietPhieuDatBan");
+				float donGia = rs.getFloat("donGia");
 				int soLuong = rs.getInt("soLuong");
+				float tienCoc = rs.getFloat("tienCoc");
 				float thanhTien = rs.getFloat("thanhTien");
 				MonAn monAn = monAn_DAO.getMonAnTheoMa(rs.getInt("maMon"));
 				PhieuDatBan phieuDatBan = phieuDatBan_DAO.getPhieuDatBanTheoMa(rs.getInt("maPhieuDatBan"));
 				
-				ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(maChiTietPhieuDatBan, soLuong, thanhTien, monAn, phieuDatBan);
+				ChiTietPhieuDatBan chiTietPhieuDatBan = new ChiTietPhieuDatBan(donGia, soLuong, tienCoc, thanhTien, monAn, phieuDatBan);
 				dsChiTietPhieuDatBan.add(chiTietPhieuDatBan);
 			}
 		} catch (SQLException e) {
@@ -72,14 +75,16 @@ public class ChiTietPhieuDatBan_DAO {
 	}
 	public boolean themChiTietPhieuDatBan(ChiTietPhieuDatBan chiTietPhieuDatBan) {
 		Connection con = ConnectDB.getConnection();
-		String query = "insert into ChiTietPhieuDatBan values(?,?,?,?)";
+		String query = "insert into ChiTietPhieuDatBan values(?,?,?,?,?, ?)";
 		int n = 0;
 		try {
 			PreparedStatement pstm = con.prepareStatement(query);
-			pstm.setInt(1, chiTietPhieuDatBan.getSoLuong());
-			pstm.setFloat(2, chiTietPhieuDatBan.getThanhTien());
-			pstm.setInt(3, chiTietPhieuDatBan.getMonAn().getMaMon());
-			pstm.setInt(4, chiTietPhieuDatBan.getPhieuDatBan().getMaPhieuDatBan());
+			pstm.setFloat(1, chiTietPhieuDatBan.getDonGia());
+			pstm.setInt(2, chiTietPhieuDatBan.getSoLuong());
+			pstm.setFloat(3, chiTietPhieuDatBan.getTienCoc());
+			pstm.setFloat(4, chiTietPhieuDatBan.getThanhTien());
+			pstm.setInt(5, chiTietPhieuDatBan.getMonAn().getMaMon());
+			pstm.setInt(6, chiTietPhieuDatBan.getPhieuDatBan().getMaPhieuDatBan());
 			n = pstm.executeUpdate();
 		} catch (Exception e) {
 			e.printStackTrace();
