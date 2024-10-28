@@ -639,9 +639,6 @@ public class FormDatBan extends JFrame {
 		comboBoxBan.setBackground(whiteColor);
 		comboBoxBan.setFont(txtFieldFont);
 
-		
-		
-
 		pnlViTriBan.add(lblKhuVuc);
 		pnlViTriBan.add(Box.createHorizontalStrut(25));
 		pnlViTriBan.add(comboBoxKhuVuc);
@@ -655,9 +652,7 @@ public class FormDatBan extends JFrame {
 		comboBoxSLKhach.setBackground(backgroundColor);
 		comboBoxSLKhach.setBackground(whiteColor);
 		comboBoxSLKhach.setFont(txtFieldFont);
-		getDataToComboBox(comboBoxKhuVuc, comboBoxBan, comboBoxSLKhach,  maBan, khuVuc);
-		comboBoxKhuVuc.setSelectedItem(khuVuc);
-		comboBoxBan.setSelectedItem(maBan);
+		getDataToComboBox(comboBoxKhuVuc, comboBoxBan, comboBoxSLKhach, khuVuc, maBan);
 
 		pnlViTriBan.add(lblSoKhach);
 		pnlViTriBan.add(comboBoxSLKhach);
@@ -699,7 +694,6 @@ public class FormDatBan extends JFrame {
 		dateChooserNgayDen.setBackground(whiteLight);
 		dateChooserNgayDen.setEnabled(false);
 		dateChooserNgayDen.setMinSelectableDate(new Date());
-
 
 		radioBtnSuDungNgay.addActionListener(e -> {
 			comboBoxGio.setBackground(whiteLight);
@@ -746,25 +740,44 @@ public class FormDatBan extends JFrame {
 		lblTienCoc.setFont(txtFieldFont);
 		txtTienCoc = new JTextField();
 		txtTienCoc.setFont(txtFieldFont);
-		getTienCoc(maBan, (int) comboBoxSLKhach.getSelectedItem(), txtTienCoc);
+		updateTienCoc();
 
 		// ==============================ACTION LISTENER/[[[[]]]]PANEL TT DAT
 		// BAN========================
-		
-		comboBoxBan.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getTienCoc((int) comboBoxBan.getSelectedItem(), (int) comboBoxSLKhach.getSelectedItem(), txtTienCoc);
+		comboBoxKhuVuc.addActionListener(e -> {
+			List<Ban> bans = new ArrayList<Ban>();
+			bans = new DAO_Ban().getBansByKhuVuc((String) comboBoxKhuVuc.getSelectedItem());
+			comboBoxBan.removeAllItems();
+			for (Ban ban : bans) {
+				comboBoxBan.addItem(ban.getMaBan());
 			}
+
+			comboBoxSLKhach.removeAllItems();
+			int soGhe = new DAO_Ban().getSoGheByMaBan((Integer) comboBoxBan.getSelectedItem());
+
+			for (int i = 1; i <= soGhe; i++) {
+				comboBoxSLKhach.addItem(i);
+			}
+			
+			updateTienCoc();
 		});
-		//OK combobox SL Khách
-		comboBoxSLKhach.addActionListener(e->{
-			getTienCoc((int) comboBoxBan.getSelectedItem(), (int) comboBoxSLKhach.getSelectedItem(), txtTienCoc);
+
+		comboBoxBan.addActionListener(e -> {
+
+			comboBoxSLKhach.removeAllItems();
+			if (comboBoxBan.getItemCount() > 0) {
+				int soGhe2 = new DAO_Ban().getSoGheByMaBan((Integer) comboBoxBan.getSelectedItem());
+
+				for (int i = 1; i <= soGhe2; i++) {
+					comboBoxSLKhach.addItem(i);
+				}
+			}
+			updateTienCoc();
 		});
-		
-		
-		
-		
+		// OK combobox SL Khách
+		comboBoxSLKhach.addActionListener(e -> {
+			updateTienCoc();
+		});
 
 		pnlTienCoc.add(lblTienCoc);
 		pnlTienCoc.add(Box.createHorizontalStrut(22));
@@ -965,15 +978,17 @@ public class FormDatBan extends JFrame {
 			} else {
 				// Nếu tất cả đều hợp lệ
 				if (radioBtnDungSau.isSelected()) {
-					
+
 					if (radioBtnKHMoi.isSelected()) {
 						// Khách hàng mới đặt bàn:
-						
+
 						if (kiemTraNgayDat(dateChooserNgayDen)) {
-							if (themKhachHang(txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(),txtDiaChi.getText())) {
-								themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),(int) comboBoxBan.getSelectedItem(), nhanVien);
+							if (themKhachHang(txtTenKH.getText(), txtSDT.getText(), txtEmail.getText(),
+									txtDiaChi.getText())) {
+								themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
+										(int) comboBoxBan.getSelectedItem(), nhanVien);
 								// Thêm chi tiết phiếu nữa là OK
-								
+
 								new FormManHinhChinh(nhanVien);
 							} else {
 								JOptionPane.showMessageDialog(this, "SỐ ĐIỆN THOẠI ĐÃ ĐƯỢC ĐĂNG KÝ");
@@ -984,18 +999,18 @@ public class FormDatBan extends JFrame {
 						}
 
 					} else if (radioBtnKHVangLai.isSelected()) {
-						//khách vãng lai không thể đặt bàn dùng sau được
-						JOptionPane.showMessageDialog(null, "KHÁCH VÃNG LAI KHÔNG THỂ ĐẶT BÀN DÙNG SAU",  "CẢNH BÁO",   JOptionPane.WARNING_MESSAGE); 
+						// khách vãng lai không thể đặt bàn dùng sau được
+						JOptionPane.showMessageDialog(null, "KHÁCH VÃNG LAI KHÔNG THỂ ĐẶT BÀN DÙNG SAU", "CẢNH BÁO",
+								JOptionPane.WARNING_MESSAGE);
 					} else {
 						// Khách hàng cũ đặt bàn
 						// Thêm phiếu đặt bàn
-						if(kiemTraNgayDat(dateChooserNgayDen)) {
-							themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),(int) comboBoxBan.getSelectedItem(), nhanVien);
-						}
-						else {
+						if (kiemTraNgayDat(dateChooserNgayDen)) {
+							themPhieuDatBan(comboBoxGio, comboBoxPhut, txtSDT.getText(),
+									(int) comboBoxBan.getSelectedItem(), nhanVien);
+						} else {
 							JOptionPane.showMessageDialog(this, "VUI LÒNG CHỌN MỘT NGÀY!!!");
 						}
-						
 
 					}
 				} else if (radioBtnSuDungNgay.isSelected()) {
@@ -1052,8 +1067,8 @@ public class FormDatBan extends JFrame {
 
 	}
 
-	private void getDataToComboBox(JComboBox<String> cbbKhuVuc, JComboBox<Integer> cbbBan, JComboBox<Integer> cbbSoKhach, Integer maBan,
-			String khuVuc) {
+	private void getDataToComboBox(JComboBox<String> cbbKhuVuc, JComboBox<Integer> cbbBan,
+			JComboBox<Integer> cbbSoKhach, String khuVuc, int maBan) {
 
 		DAO_KhuVuc dao_KhuVuc = new DAO_KhuVuc();
 		List<KhuVuc> listKhuVuc = new ArrayList<KhuVuc>();
@@ -1068,44 +1083,38 @@ public class FormDatBan extends JFrame {
 			cbbKhuVuc.addItem(tenKV);
 		}
 		cbbKhuVuc.setSelectedItem(khuVuc);
-		cbbKhuVuc.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				cbbBan.removeAllItems();
+		DAO_Ban daoBan = new DAO_Ban();
+		List<Ban> bans = daoBan.getBansByKhuVuc((String) cbbKhuVuc.getSelectedItem());
 
-				DAO_Ban daoBan = new DAO_Ban();
-				List<Ban> bans = daoBan.getBansByKhuVuc((String) cbbKhuVuc.getSelectedItem());
-
-				for (Ban ban : bans) {
-					cbbBan.addItem(ban.getMaBan());
-				}
-				
-				int soGhe = daoBan.getSoGheByMaBan((Integer) cbbBan.getSelectedItem());
-				
-				for (int i = 1; i <= soGhe; i++) {
-					cbbSoKhach.addItem(i);
-				}
-
-
-			}
-		});
-
-	}
-
-	private void handleCBBSoLuong(JComboBox<Integer> cbbBan, JComboBox<Integer> cbbSoKhach) {
-		if(cbbSoKhach != null) {
-			cbbSoKhach.removeAllItems();
+		for (Ban ban : bans) {
+			cbbBan.addItem(ban.getMaBan());
 		}
-		
+		cbbBan.setSelectedItem(maBan);
+
 		DAO_Ban dao_Ban = new DAO_Ban();
-		int soGhe = dao_Ban.getSoGheByMaBan((Integer) cbbBan.getSelectedItem());
+		int soGhe = dao_Ban.getSoGheByMaBan(maBan);
 		for (int i = 1; i <= soGhe; i++) {
 			cbbSoKhach.addItem(i);
 		}
-	}
+		
 
-	private void getTienCoc(int maBan, int soLuongKhach, JTextField txtTienCoc) {
+	}
+//
+//	private void handleCBBSoLuong(JComboBox<Integer> cbbBan, JComboBox<Integer> cbbSoKhach) {
+//		if(cbbBan!= null) {
+//			if(cbbSoKhach != null){
+//				cbbSoKhach.removeAllItems();
+//				DAO_Ban dao_Ban = new DAO_Ban();
+//				int soGhe = dao_Ban.getSoGheByMaBan((Integer) cbbBan.getSelectedItem());
+//				for (int i = 1; i <= soGhe; i++) {
+//					cbbSoKhach.addItem(i);
+//				}
+//			}
+//		}
+//	}
+//	
+
+	private float getTienCoc(int maBan, int soLuongKhach) {
 		float tienCoc = (float) 0.0;
 		DAO_Ban dao_Ban = new DAO_Ban();
 		int soGhe = dao_Ban.getSoGheByMaBan(maBan);
@@ -1117,10 +1126,18 @@ public class FormDatBan extends JFrame {
 		} else if (soGhe > 10) {
 			tienCoc = (float) (soGhe * 50000.0 + soLuongKhach * 140000.0);
 		}
-		txtTienCoc.setText(String.valueOf(tienCoc));
+		return tienCoc;
 
 	}
 
+	private void updateTienCoc() {
+	    if (comboBoxBan.getSelectedItem() != null && comboBoxSLKhach.getSelectedItem() != null) {
+	        int maBan = (Integer) comboBoxBan.getSelectedItem();
+	        int soKhach = (Integer) comboBoxSLKhach.getSelectedItem();
+	        float tienCocTam = getTienCoc(maBan, soKhach);
+	        txtTienCoc.setText(String.valueOf(tienCocTam));
+	    }
+	}
 	public boolean isValidString(String input) {
 		return input != null && !input.trim().isEmpty();
 	}
@@ -1154,8 +1171,6 @@ public class FormDatBan extends JFrame {
 	private boolean themKhachHang(String tenKH, String sDT, String email, String diaChi) {
 		DAO_KhachHang dao_KhachHang = new DAO_KhachHang();
 		KhachHang khachHangMoi = new KhachHang(0, tenKH, sDT, email, diaChi);
-		// KhachHang khachHangMoi = new KhachHang(0, txtTenKH.getText(),
-		// txtSDT.getText(), txtEmail.getText(), txtDiaChi.getText());
 		if (dao_KhachHang.addKhachHang(khachHangMoi)) {
 			return true;
 		}
@@ -1194,9 +1209,10 @@ public class FormDatBan extends JFrame {
 		JOptionPane.showMessageDialog(this, "ĐẶT BÀN THÀNH CÔNG");
 
 	}
+
 	private boolean kiemTraNgayDat(JDateChooser dateChooserNgayDen) {
 		java.util.Date selectedDate = dateChooserNgayDen.getDate();
-		if(selectedDate != null) {
+		if (selectedDate != null) {
 			return true;
 		}
 		return false;
