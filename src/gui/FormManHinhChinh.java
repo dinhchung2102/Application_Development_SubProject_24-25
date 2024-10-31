@@ -97,6 +97,8 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 	private JPanel pnlChucNang;
 
 	private JButton btnLocBanTrong;
+	private JButton btnDatMon;
+	private JButton btnXuatHD;
 
 	public FormManHinhChinh(NhanVien nhanVien) {
 		setTitle("Quản lý đặt bàn");
@@ -435,14 +437,11 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 
 		JPanel tablePanel = new JPanel();
 
-		tablePanel.setPreferredSize(new Dimension(500, 500));
+		tablePanel.setPreferredSize(new Dimension(400, 400));
 		tablePanel.setBorder(BorderFactory.createLineBorder(new Color(0, 255, 0), 10));
+		
 
-		if (!ban.isTrangThai()) {
-			tablePanel.setBackground(Color.LIGHT_GRAY);
-		} else {
-			tablePanel.setBackground(Color.GREEN);
-		}
+		
 
 		JLabel lblID = new JLabel("Bàn: " + id);
 		lblID.setFont(new Font("Montserrat", Font.BOLD, 50));
@@ -456,6 +455,25 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		tablePanel.add(Box.createRigidArea(new Dimension(30, 40)));
 		tablePanel.add(label);
 		tablePanel.add(lblSoGhe);
+		tablePanel.add(Box.createRigidArea(new Dimension(100, 40)));
+		btnDatMon = new JButton("GỌI MÓN");
+		btnDatMon.setBackground(Color.white);
+		btnDatMon.setPreferredSize(new Dimension(200, 50));
+		btnDatMon.setFont(new Font("Montserrat", Font.BOLD, 20));
+		btnXuatHD = new JButton("XUẤT HÓA ĐƠN");
+		btnXuatHD.setBackground(Color.white);
+		btnXuatHD.setPreferredSize(new Dimension(200, 50));
+		btnXuatHD.setFont(new Font("Montserrat", Font.BOLD, 20));
+		if (!ban.isTrangThai()) {
+			tablePanel.setBackground(Color.LIGHT_GRAY);
+		} else {
+			tablePanel.setBackground(Color.GREEN);
+			btnTable.setEnabled(false);
+			tablePanel.add(Box.createVerticalStrut(100));
+			tablePanel.add(btnDatMon);
+			tablePanel.add(btnXuatHD);
+			
+		}
 
 		btnTable.add(tablePanel);
 		return btnTable;
