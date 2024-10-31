@@ -274,7 +274,7 @@ public class FormDatBan extends JFrame {
 		mnuKhachHang.add(mniQuanLiKhachHang);
 
 		mniQuanLiKhachHang.addActionListener(e -> {
-			KhachHangGUI khachHangGUI = new KhachHangGUI();
+			KhachHangGUI khachHangGUI = new KhachHangGUI(nhanVien);
 			khachHangGUI.setVisible(true);
 		});
 
@@ -292,6 +292,11 @@ public class FormDatBan extends JFrame {
 		mnuMonAn.setFont(fontMenu);
 		mniDSMonAn = new JMenuItem("Danh sách món ăn");
 		mniDSMonAn.setFont(fontMenuItem);
+		mniDSMonAn.addActionListener(e->{
+			dispose();
+			MonAnGUI newMonAnGUI = new MonAnGUI(nhanVien);
+			newMonAnGUI.setVisible(true);
+		});
 		mniThemMonAn = new JMenuItem("Thêm món ăn");
 		mniThemMonAn.setFont(fontMenuItem);
 		mnuMonAn.add(mniDSMonAn);

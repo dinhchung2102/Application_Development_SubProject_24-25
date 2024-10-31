@@ -348,24 +348,27 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		} else if (o.equals(mniDSHoaDon)) {
 
 		} else if (o.equals(mniDSKhuyenMai)) {
-			KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI();
+			this.dispose();
+			KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI(nhanVien);
 			khuyenMaiGUI.setVisible(true);
 		} else if (o.equals(mniThemKhuyenMai)) {
 
 		} else if (o.equals(mnuKhachHang)) {
-
+			KhachHangGUI newKhachHangGUI = new KhachHangGUI(nhanVien);
+			newKhachHangGUI.setVisible(true);
 		} else if (o.equals(mnuBan)) {
+			
 
 		} else if (o.equals(mniDSMonAn)) {
-
-			MonAnGUI monAnGUI = new MonAnGUI();
+			dispose();
+			MonAnGUI monAnGUI = new MonAnGUI(nhanVien);
 			monAnGUI.setVisible(true);
 
 		} else if (o.equals(mniThemMonAn)) {
 
 		} else if (o.equals(mniQuanLiKhachHang)) {
-
-			KhachHangGUI khachHang = new KhachHangGUI();
+			this.dispose();
+			KhachHangGUI khachHang = new KhachHangGUI(nhanVien);
 			khachHang.setVisible(true);
 		} else if (o.equals(mniThongKeDoanhThu)) {
 

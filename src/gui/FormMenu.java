@@ -234,8 +234,8 @@ public class FormMenu extends JFrame implements ActionListener{
 		}
 		else if (o.equals(mniDSKhuyenMai)) {
 			
-			KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI();
-			khuyenMaiGUI.setVisible(true);
+//			KhuyenMaiGUI khuyenMaiGUI = new KhuyenMaiGUI();
+//			khuyenMaiGUI.setVisible(true);
 		}
 		else if (o.equals(mniThemKhuyenMai)) {
 			
@@ -247,9 +247,6 @@ public class FormMenu extends JFrame implements ActionListener{
 			
 		}
 		else if (o.equals(mniDSMonAn)) {
-		
-			MonAnGUI monAnGUI = new MonAnGUI();
-			monAnGUI.setVisible(true);
 			
 			
 		}
@@ -258,8 +255,8 @@ public class FormMenu extends JFrame implements ActionListener{
 		}
 		else if (o.equals(mniQuanLiKhachHang)) {
 			
-	            KhachHangGUI khachHang = new KhachHangGUI();
-	            khachHang.setVisible(true);
+	           // KhachHangGUI khachHang = new KhachHangGUI();
+	            //khachHang.setVisible(true);
 		}
 		else if (o.equals(mniThongKeDoanhThu)) {
 			

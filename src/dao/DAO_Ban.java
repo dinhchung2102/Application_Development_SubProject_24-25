@@ -13,7 +13,7 @@ public class DAO_Ban {
     public List<Ban> getBansByKhuVuc(String khuVuc) {
         List<Ban> bans = new ArrayList<Ban>();
         
-        String sql = "SELECT b.maBan, b.loaiBan, b.soGheNgoi, b.moTa, b.trangThai " +
+        String sql = "SELECT b.maBan, b.loaiBan, b.soGheNgoi, b.moTa, b.trangThai, b.maKhuVuc " +
                 "FROM Ban b " +
                 "INNER JOIN KhuVuc k ON b.maKhuVuc = k.maKhuVuc " +
                 "WHERE k.tenKhuVuc = ?";
@@ -31,8 +31,9 @@ public class DAO_Ban {
             	    int soGheNgoi = resultSet.getInt("soGheNgoi"); 
             	    String moTa = resultSet.getString("moTa"); 
             	    boolean trangThai = resultSet.getBoolean("trangThai"); 
+            	    int maKhuVuc = resultSet.getInt("maKhuVuc");
 
-            	    Ban ban = new Ban(maBan, loaiBan, soGheNgoi, moTa, trangThai);
+            	    Ban ban = new Ban(maBan, loaiBan, soGheNgoi, moTa, trangThai, new DAO_KhuVuc().getKhuVucById(maKhuVuc));
             	    bans.add(ban);
             	}
             }
@@ -96,8 +97,9 @@ public class DAO_Ban {
                     int soGheNgoi = resultSet.getInt("soGheNgoi"); 
                     String moTa = resultSet.getString("moTa"); 
                     boolean trangThai = resultSet.getBoolean("trangThai"); 
+                    int maKhuVuc = resultSet.getInt("maKhuVuc");
 
-                    ban = new Ban(maBan, loaiBan, soGheNgoi, moTa, trangThai); 
+                    ban = new Ban(maBan, loaiBan, soGheNgoi, moTa, trangThai, new DAO_KhuVuc().getKhuVucById(maKhuVuc)); 
                 }
             }
         } catch (Exception e) {
