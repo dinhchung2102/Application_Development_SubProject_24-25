@@ -311,7 +311,7 @@ public class FormManHinhChinh extends JFrame implements ActionListener {
 		pnlChucNang.add(btnLocBanTrong);
 		pnlChucNang.setBackground(backgroundColor);
 
-		// ===================== ADD CÁC PANEL VÀO JFRAME ========================
+		// ===================== ADD CÁC PANEL VÀO JFRAME ======================== 
 		getContentPane().add(tablePanel, BorderLayout.CENTER);
 		getContentPane().add(pnlChucNang, BorderLayout.EAST);
 		getContentPane().add(nvgRoom, BorderLayout.SOUTH);
